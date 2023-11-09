@@ -1,0 +1,87 @@
+@import 'normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import '../../asset/scss/_variables.scss';
+
+:root {
+    --primary-color: #fff200;
+    --bold-primary-color: #ffa200;
+    --white-color: #fff;
+    --text-color: #333;
+
+    // Default Layout vars
+    --default-layout-width: 1280px;
+
+    // Header
+    --default-layout-header-height: 90px;
+    --default-layout-mobile-header-height: 60px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+// html {
+//     font-size: 62.5%;
+// }
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.4;
+    text-rendering: optimizeSpeed;
+    margin: 0;
+}
+
+button:active,
+a:active,
+div:active {
+    outline: none; /* Loại bỏ viền chứa focus trên nút hoặc liên kết */
+    -webkit-tap-highlight-color: transparent; /* Loại bỏ màu chớp của trình duyệt Webkit (Chrome, Safari, etc.) */
+}
+
+// Custom css for Tippy
+.tippy-box {
+    border-radius: 10px;
+}
+
+.tippy-content {
+    padding: 10px;
+    font-weight: 600;
+}
+
+// -------- RESPONSIVE
+
+/* Only PC, Laptop */
+@media (min-width: #{$pc-min-width}) {
+    .hide-on-pc {
+        display: none !important;
+    }
+}
+
+/* From tablet to higher */
+@media (min-width: #{$tablet-min-width}) {
+    .hide-from-tablet-higher {
+        display: none !important;
+    }
+}
+
+/* Mobile and Tablet */
+@media (max-width: #{$tablet-max-width}) {
+    .hide-on-mobile-tablet {
+        display: none !important;
+    }
+}
+
+/* Tablet */
+@media (min-width: #{$tablet-min-width}) and (max-width: #{$tablet-max-width}) {
+    .hide-on-tablet {
+        display: none !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: #{$mobile-max-width}) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
