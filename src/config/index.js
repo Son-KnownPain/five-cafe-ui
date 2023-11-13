@@ -1,7 +1,9 @@
 import routes from "./routes";
+import layout from "./layout";
 
 const config = {
-    routes
+    routes,
+    layout,
 }
 
 export default config;
