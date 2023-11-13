@@ -68,8 +68,8 @@ function Sidebar() {
         <Box sx={sidebarStyle}>
             <Stack spacing={0}>
                 {
-                    menu.map(item => (
-                        <NavLink to={config.routes.home}>
+                    menu.map((item, index) => (
+                        <NavLink key={index} to={config.routes.home}>
                             <Button
                                 variant="text"
                                 sx={
