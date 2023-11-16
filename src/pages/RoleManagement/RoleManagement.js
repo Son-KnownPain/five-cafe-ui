@@ -1,13 +1,30 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
+import {
+    Alert,
+    Box,
+    Button,
+    Modal,
+    Stack,
+    TextField,
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
+}
+    from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useFormik } from "formik";
 
 import useStyles from "~/styles";
 import { allRoles, createRole, deleteRoles, updateRole } from "~/services/rolesService";
 import { roleSchemeValidation } from "~/validation/roleValidation";
+import Loader from "~/components/Loader";
 
 function RoleManagement() {
+    const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
+    // Dialog
     const [columns] = useState([
         {
             field: 'roleID',
@@ -48,7 +65,7 @@ function RoleManagement() {
             roleName: '',
         },
         validationSchema: roleSchemeValidation,
-        onSubmit: (value, { setValues }) => {
+        onSubmit: (value, { resetForm }) => {
             createRole(
                 {
                     roleID: value.roleID,
@@ -74,9 +91,11 @@ function RoleManagement() {
                             setSuccessAlert('')
                         }, 5000);
                         setWarningAlert([])
-                        setValues({
-                            roleID: '',
-                            roleName: '',
+                        resetForm({
+                            values: {
+                                roleID: '',
+                                roleName: '',
+                            }
                         })
                     }
                 })
@@ -138,7 +157,7 @@ function RoleManagement() {
         return e => {
             e.stopPropagation();
             updateFormik.setValues({
-                ...formik.values,
+                ...updateFormik.values,
                 roleID: row.roleID,
                 roleName: row.roleName,
             });
@@ -151,6 +170,11 @@ function RoleManagement() {
     }
 
     const handleClickDelete = () => {
+        handleClickOpen()
+
+    }
+
+    const handleDelete = () => {
         deleteRoles(selectedRows.map(item => item.roleID))
             .then(res => {
                 if (res.status === 200) {
@@ -171,7 +195,16 @@ function RoleManagement() {
                     }, 5000);
                 }
             })
-    }
+        setDeleteConfirmationDialogOpen(false);
+    };
+
+    const handleClickOpen = () => {
+        setDeleteConfirmationDialogOpen(true);
+    };
+
+    const handleClose = () => {
+        setDeleteConfirmationDialogOpen(false);
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -189,6 +222,28 @@ function RoleManagement() {
 
     return (
         <>
+            {/* Dialog */}
+            <Dialog
+                open={deleteConfirmationDialogOpen}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Xác nhận xoá</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Bạn chắc chắn muốn xoá không?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Hủy
+                    </Button>
+                    <Button onClick={handleDelete} color="primary" autoFocus>
+                        Xoá
+                    </Button>
+                </DialogActions>
+            </Dialog>
             {/* Modal thêm */}
             <Modal
                 open={createModalOpen}
@@ -296,21 +351,29 @@ function RoleManagement() {
                 {successAlert && <Alert sx={{ mt: 1 }}>{successAlert}</Alert>}
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="contained" onClick={() => { setCreateModalOpen(true) }}>Thêm vai trò</Button>
-                    <Button onClick={handleClickDelete} sx={{ ml: 1 }} variant="contained" color="error">Xóa</Button>
+                    {
+                        !!selectedRows.length && <Button onClick={handleClickDelete} sx={{ ml: 1 }} variant="contained" color="error">Xóa</Button>
+                    }
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                    <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        initialState={{
-                            pagination: {
-                                paginationModel: { page: 0, pageSize: 5 },
-                            },
-                        }}
-                        pageSizeOptions={[5, 10]}
-                        checkboxSelection
-                        onRowSelectionModelChange={handleModelChange}
-                    />
+                    {
+                        !!rows.length ? (
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { page: 0, pageSize: 5 },
+                                    },
+                                }}
+                                pageSizeOptions={[5, 10]}
+                                checkboxSelection
+                                onRowSelectionModelChange={handleModelChange}
+                            />
+                        ) : (
+                            <Loader />
+                        )
+                    }
                 </Box>
             </Box>
         </>
