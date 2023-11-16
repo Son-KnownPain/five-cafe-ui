@@ -13,6 +13,7 @@ const sidebarStyle = {
     right: 0,
     top: config.layout.headerHeight,
     zIndex: 10,
+    backgroundColor: "#fff",
 }
 
 const menu = [
@@ -56,7 +57,8 @@ const menu = [
         label: 'Quản lí trạng thái'
     },
     {
-        label: 'Quản lí vai trò'
+        label: 'Quản lí vai trò',
+        path: config.routes.roleManagement
     },
     {
         label: 'Quản lí nhà cung cấp'
@@ -69,7 +71,7 @@ function Sidebar() {
             <Stack spacing={0}>
                 {
                     menu.map((item, index) => (
-                        <NavLink key={index} to={config.routes.home}>
+                        <NavLink key={index} to={item.path || '/'}>
                             <Button
                                 variant="text"
                                 sx={
