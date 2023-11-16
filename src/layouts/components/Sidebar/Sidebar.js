@@ -1,6 +1,6 @@
-import { Box, Button, Stack } from "@mui/material";
-import { NavLink } from "react-router-dom";
-import config from "~/config";
+import { Box, Button, Stack } from '@mui/material';
+import { NavLink } from 'react-router-dom';
+import config from '~/config';
 
 const sidebarStyle = {
     width: config.layout.sidebarWidth,
@@ -13,79 +13,76 @@ const sidebarStyle = {
     right: 0,
     top: config.layout.headerHeight,
     zIndex: 10,
-}
+};
 
 const menu = [
     {
-        label: 'Thống kê doanh thu'
+        label: 'Thống kê doanh thu',
     },
     {
-        label: 'Phục vụ'
+        label: 'Phục vụ',
     },
     {
-        label: 'Quầy'
+        label: 'Quầy',
     },
     {
-        label: 'Quản lí nhân viên'
+        label: 'Quản lí nhân viên',
+        path: config.routes.employeeManagement,
     },
     {
-        label: 'Quản lí ca làm'
+        label: 'Quản lí ca làm',
     },
     {
-        label: 'Quản lí lương'
+        label: 'Quản lí lương',
     },
     {
-        label: 'Quản lí danh mục'
+        label: 'Quản lí danh mục',
     },
     {
-        label: 'Quản lí nguyên liệu'
+        label: 'Quản lí nguyên liệu',
     },
     {
-        label: 'Quản lí sản phẩm'
+        label: 'Quản lí sản phẩm',
     },
     {
-        label: 'Quản lí hóa đơn'
+        label: 'Quản lí hóa đơn',
     },
     {
-        label: 'Quản lí nhập hàng'
+        label: 'Quản lí nhập hàng',
     },
     {
-        label: 'Quản lí chấm công'
+        label: 'Quản lí chấm công',
     },
     {
-        label: 'Quản lí trạng thái'
+        label: 'Quản lí trạng thái',
     },
     {
-        label: 'Quản lí vai trò'
+        label: 'Quản lí vai trò',
     },
     {
-        label: 'Quản lí nhà cung cấp'
+        label: 'Quản lí nhà cung cấp',
     },
-]
+];
 
 function Sidebar() {
     return (
         <Box sx={sidebarStyle}>
             <Stack spacing={0}>
-                {
-                    menu.map((item, index) => (
-                        <NavLink key={index} to={config.routes.home}>
-                            <Button
-                                variant="text"
-                                sx={
-                                    {
-                                        color: '#333',
-                                        width: '100%',
-                                        textTransform: 'none',
-                                        justifyContent: 'flex-start',
-                                    }
-                                }
-                            >
-                                {item.label}
-                            </Button>
-                        </NavLink>
-                    ))
-                }
+                {menu.map((item, index) => (
+                    <NavLink key={index} to={item.path || '/'}>
+                        <Button
+                            variant="text"
+                            sx={{
+                                color: '#333',
+                                width: '100%',
+                                textTransform: 'none',
+                                justifyContent: 'flex-start',
+                            }}
+                        >
+                            {item.label}
+                        </Button>
+                    </NavLink>
+                ))}
             </Stack>
         </Box>
     );
