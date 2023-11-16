@@ -16,4 +16,17 @@ export const post = async (path, data, options) => {
     return response.data;
 };
 
+export const put = async (path, data, options) => {
+    const response = await fiveCafeHttpRequest.put(path, data, options);
+
+    return response.data;
+};
+
+export const myDelete = async (path, data, options) => {
+    const response = await fiveCafeHttpRequest.delete(path, data, options);
+
+    return response.data;
+};
+
+
 export default fiveCafeHttpRequest;
