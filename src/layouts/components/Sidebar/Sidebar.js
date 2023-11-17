@@ -28,6 +28,7 @@ const menu = [
     },
     {
         label: 'Quản lí nhân viên',
+        path: config.routes.employeeManagement,
     },
     {
         label: 'Quản lí ca làm',

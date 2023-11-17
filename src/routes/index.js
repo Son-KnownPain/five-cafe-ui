@@ -1,6 +1,7 @@
 import config from '~/config';
-import CategoryManagement from '~/pages/CategoryManagement';
+import EmployeeManagement from '~/pages/EmployeeManagement';
 import Home from '~/pages/Home';
+import CategoryManagement from '~/pages/CategoryManagement';
 import RoleManagement from '~/pages/RoleManagement';
 
 export const publicRoutes = [];
@@ -11,6 +12,8 @@ export const privateRoutes = [
         component: Home,
     },
     {
+        path: config.routes.employeeManagement,
+        component: EmployeeManagement,
         path: config.routes.categoryManagement,
         component: CategoryManagement,
     },
