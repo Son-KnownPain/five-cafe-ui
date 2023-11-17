@@ -13,6 +13,7 @@ const sidebarStyle = {
     right: 0,
     top: config.layout.headerHeight,
     zIndex: 10,
+    backgroundColor: '#fff',
 };
 
 const menu = [
@@ -58,6 +59,7 @@ const menu = [
     },
     {
         label: 'Quản lí vai trò',
+        path: config.routes.roleManagement,
     },
     {
         label: 'Quản lí nhà cung cấp',
