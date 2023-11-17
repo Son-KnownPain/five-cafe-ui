@@ -1,9 +1,9 @@
-import config from "~/config"
-import Home from "~/pages/Home"
-import RoleManagement from "~/pages/RoleManagement"
+import config from '~/config';
+import CategoryManagement from '~/pages/CategoryManagement';
+import Home from '~/pages/Home';
+import RoleManagement from '~/pages/RoleManagement';
 
-export const publicRoutes = [
-]
+export const publicRoutes = [];
 
 export const privateRoutes = [
     {
@@ -11,7 +11,11 @@ export const privateRoutes = [
         component: Home,
     },
     {
+        path: config.routes.categoryManagement,
+        component: CategoryManagement,
+    },
+    {
         path: config.routes.roleManagement,
         component: RoleManagement,
     },
-]
+];
