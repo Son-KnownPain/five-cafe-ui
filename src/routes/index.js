@@ -14,6 +14,8 @@ export const privateRoutes = [
     {
         path: config.routes.employeeManagement,
         component: EmployeeManagement,
+    },
+    {
         path: config.routes.categoryManagement,
         component: CategoryManagement,
     },
