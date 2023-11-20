@@ -64,6 +64,7 @@ const menu = [
     },
     {
         label: 'Quản lí nhà cung cấp',
+        path: config.routes.supplierManagement,
     },
 ];
 

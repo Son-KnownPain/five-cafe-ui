@@ -17,25 +17,16 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
 
-function EmployeeManagement() {
+function SupplierManagement() {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [successAlert, setSuccessAlert] = useState('');
     const columns = [
-        { field: 'employeeID', headerName: 'Mã nhân viên', flex: 1 },
-        { field: 'name', headerName: 'Tên nhân viên', flex: 1 },
-        { field: 'phone', headerName: ' SDT', flex: 1 },
-        {
-            field: 'username',
-            headerName: 'Username',
-            flex: 1,
-        },
-        {
-            field: 'password',
-            headerName: 'Mật khẩu',
-            flex: 1,
-        },
+        { field: 'supplierID', headerName: 'Mã nhà cung cấp', flex: 1 },
+        { field: 'contactname', headerName: 'Tên nàh cung cấp', flex: 1 },
+        { field: 'contactnumber', headerName: ' Số liên lạc NCC', flex: 1 },
+        { field: 'address', headerName: 'Địa chỉ', flex: 1 },
         {
             field: 'actions',
             headerName: 'Thao tác',
@@ -56,10 +47,9 @@ function EmployeeManagement() {
             e.stopPropagation();
             updateFormik.setValues({
                 ...updateFormik.values,
-                name: row.name,
-                phone: row.phone,
-                username: row.username,
-                password: row.password,
+                contactname: row.contactname,
+                contactnumber: row.contactnumber,
+                address: row.address,
             });
             setUpdateModalOpen(true);
         };
@@ -72,54 +62,44 @@ function EmployeeManagement() {
     //Chinh sua
     const updateFormik = useFormik({
         initialValues: {
-            name: '',
-            phone: '',
-            username: '',
-            password: '',
+            contactname: '',
+            contactnumber: '',
+            address: '',
         },
         validationSchema: object({
-            name: string().required('Tên nhân viên là bắt buộc'),
-            phone: string().required('Số điện thoại là bắt buộc'),
-            username: string()
-                .required('Username là bắt buộc')
-                .matches(/^[a-z0-9]+$/, 'Username chỉ bao gồm a-z và số'),
-            password: string().required('Mật khẩu là bắt buộc'),
+            contactname: string().required('Tên nhà cung cấp là bắt buộc'),
+            contactnumber: string().required('Số điện thoại nhà cung cấplà bắt buộc'),
+            address: string().required('Địa chỉ là bắt buộc'),
         }),
         onSubmit(value) {
             setUpdateModalOpen(false);
-            setSuccessAlert('Chỉnh sửa nhân viên thành công!');
+            setSuccessAlert('Chỉnh sửa nhà cung cấp thành công!');
             setTimeout(() => {
                 setSuccessAlert('');
             }, 5000);
         },
     });
-
     // create employee
     const createFormik = useFormik({
         initialValues: {
-            name: '',
-            phone: '',
-            username: '',
-            password: '',
+            contactname: '',
+            contactnumber: '',
+            address: '',
         },
         validationSchema: object({
-            name: string().required('Tên nhân viên là bắt buộc'),
-            phone: string().required('Số điện thoại là bắt buộc'),
-            username: string()
-                .required('Username là bắt buộc')
-                .matches(/^[a-z0-9]+$/, 'Username chỉ bao gồm a-z và số'),
-            password: string().required('Mật khẩu là bắt buộc'),
+            contactname: string().required('Tên nhà cung cấp là bắt buộc'),
+            contactnumber: string().required('Số điện thoại nhà cung cấplà bắt buộc'),
+            address: string().required('Địa chỉ là bắt buộc'),
         }),
         onSubmit(value) {
             setCreateModalOpen(false);
-            setSuccessAlert('Thêm nhân viên thành công!');
+            setSuccessAlert('Thêm nhà cung cấp thành công!');
             setTimeout(() => {
                 setSuccessAlert('');
             }, 5000);
         },
     });
-    //data truyen vao de huen thi DL
-    const rows = [{ id: 1, employeeID: 1, name: 'Hoang', phone: '09887765', username: 'Leh1309', password: '1234' }];
+    const rows = [{ id: 1, supplierID: 1, contactname: 'LMH', contactnumber: '09887765', address: 'Bac lieu' }];
 
     //dialog handle
     const [open, setOpen] = useState(false);
@@ -133,7 +113,6 @@ function EmployeeManagement() {
     const handleClose = () => {
         setOpen(false);
     };
-
     return (
         <>
             {/* thong bao xoa    */}
@@ -180,48 +159,37 @@ function EmployeeManagement() {
                     <form onSubmit={updateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
-                                id="name"
-                                name="name"
-                                label="Tên nhân viên"
+                                id="contactname"
+                                contactname="contactname"
+                                label="Tên nhà cung cấp"
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
-                                value={updateFormik.values.name}
-                                error={updateFormik.touched.name && Boolean(updateFormik.errors.name)}
-                                helperText={updateFormik.touched.name && updateFormik.errors.name}
+                                value={updateFormik.values.contactname}
+                                error={updateFormik.touched.contactname && Boolean(updateFormik.errors.contactname)}
+                                helperText={updateFormik.touched.contactname && updateFormik.errors.contactname}
                             />
                             <TextField
-                                id="phone"
-                                name="phone"
-                                label="SDT"
+                                id="contactnumber"
+                                name="contactnumber"
+                                label="SDT nhà cung cấp"
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
-                                value={updateFormik.values.phone}
-                                error={updateFormik.touched.phone && Boolean(updateFormik.errors.phone)}
-                                helperText={updateFormik.touched.phone && updateFormik.errors.phone}
+                                value={updateFormik.values.contactnumber}
+                                error={updateFormik.touched.contactnumber && Boolean(updateFormik.errors.contactnumber)}
+                                helperText={updateFormik.touched.contactnumber && updateFormik.errors.contactnumber}
                             />
                             <TextField
-                                id="username"
-                                name="username"
-                                label="Username"
+                                id="address"
+                                name="address"
+                                label="address"
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
-                                value={updateFormik.values.username}
-                                error={updateFormik.touched.username && Boolean(updateFormik.errors.username)}
-                                helperText={updateFormik.touched.username && updateFormik.errors.username}
-                            />
-                            <TextField
-                                id="password"
-                                name="password"
-                                label="Mật khẩu"
-                                fullWidth
-                                onChange={updateFormik.handleChange}
-                                onBlur={updateFormik.handleBlur}
-                                value={updateFormik.values.password}
-                                error={updateFormik.touched.password && Boolean(updateFormik.errors.password)}
-                                helperText={updateFormik.touched.password && updateFormik.errors.password}
+                                value={updateFormik.values.address}
+                                error={updateFormik.touched.address && Boolean(updateFormik.errors.address)}
+                                helperText={updateFormik.touched.address && updateFormik.errors.address}
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -256,48 +224,37 @@ function EmployeeManagement() {
                     <form onSubmit={createFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
-                                id="name"
-                                name="name"
-                                label="Tên nhân viên"
+                                id="contactname"
+                                contactname="contactname"
+                                label="Tên nhà cung cấp"
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.name}
-                                error={createFormik.touched.name && Boolean(createFormik.errors.name)}
-                                helperText={createFormik.touched.name && createFormik.errors.name}
+                                onChange={updateFormik.handleChange}
+                                onBlur={updateFormik.handleBlur}
+                                value={updateFormik.values.contactname}
+                                error={updateFormik.touched.contactname && Boolean(updateFormik.errors.contactname)}
+                                helperText={updateFormik.touched.contactname && updateFormik.errors.contactname}
                             />
                             <TextField
-                                id="phone"
-                                name="phone"
-                                label="SDT"
+                                id="contactnumber"
+                                name="contactnumber"
+                                label="SDT nhà cung cấp"
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.phone}
-                                error={createFormik.touched.phone && Boolean(createFormik.errors.phone)}
-                                helperText={createFormik.touched.phone && createFormik.errors.phone}
+                                onChange={updateFormik.handleChange}
+                                onBlur={updateFormik.handleBlur}
+                                value={updateFormik.values.contactnumber}
+                                error={updateFormik.touched.contactnumber && Boolean(updateFormik.errors.contactnumber)}
+                                helperText={updateFormik.touched.contactnumber && updateFormik.errors.contactnumber}
                             />
                             <TextField
-                                id="username"
-                                name="username"
-                                label="Username"
+                                id="address"
+                                name="address"
+                                label="address"
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.username}
-                                error={createFormik.touched.username && Boolean(createFormik.errors.username)}
-                                helperText={createFormik.touched.username && createFormik.errors.username}
-                            />
-                            <TextField
-                                id="password"
-                                name="password"
-                                label="Mật khẩu"
-                                fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.password}
-                                error={createFormik.touched.password && Boolean(createFormik.errors.password)}
-                                helperText={createFormik.touched.password && createFormik.errors.password}
+                                onChange={updateFormik.handleChange}
+                                onBlur={updateFormik.handleBlur}
+                                value={updateFormik.values.address}
+                                error={updateFormik.touched.address && Boolean(updateFormik.errors.address)}
+                                helperText={updateFormik.touched.address && updateFormik.errors.address}
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -311,7 +268,7 @@ function EmployeeManagement() {
             <Box sx={{ p: 2 }}>
                 <Box>
                     <Typography variant="h4" component="h4">
-                        Danh Sách Nhân Viên
+                        Danh Sách Nhà Cung Cấp
                     </Typography>
                     <Typography variant="p" component="p" sx={{ fontSize: 14, color: '#555' }}>
                         Không nên thao tác vào các thành phần này, vì nó ảnh hưởng tới bảo mật ứng dụng!
@@ -324,7 +281,7 @@ function EmployeeManagement() {
                                 setCreateModalOpen(true);
                             }}
                         >
-                            Thêm nhan vien
+                            Thêm nhà cung cấp
                         </Button>
                         {!!selectedRows.length && (
                             <Button
@@ -359,4 +316,4 @@ function EmployeeManagement() {
     );
 }
 
-export default EmployeeManagement;
+export default SupplierManagement;
