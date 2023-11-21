@@ -2,7 +2,7 @@ import config from '~/config';
 import CategoryManagement from '~/pages/CategoryManagement';
 import Home from '~/pages/Home';
 import RoleManagement from '~/pages/RoleManagement';
-import BillStatusManagement from '~/pages/Bills-Status-Management/BillStatusManagement';
+import BillStatusManagement from '~/pages/BillStatusManagement/BillStatusManagement';
 import ShiftManagement from '~/pages/ShiftManagement';
 export const publicRoutes = [];
 
