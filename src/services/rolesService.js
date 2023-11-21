@@ -1,4 +1,4 @@
-import { get, post, put, myDelete } from '~/util/fiveCafeHttpRequest'
+import { get, post, put, remove } from '~/util/fiveCafeHttpRequest'
 
 export const allRoles = async () => {
     return await get("api/role/all")
@@ -13,5 +13,5 @@ export const updateRole = async (data) => {
 }
 
 export const deleteRoles = async (ids) => {
-    return await myDelete(`api/role/delete?ids=${ids.join(',')}`)
+    return await remove(`api/role/delete?ids=${ids.join(',')}`)
 }
