@@ -22,7 +22,7 @@ export const put = async (path, data, options) => {
     return response.data;
 };
 
-export const myDelete = async (path, data, options) => {
+export const remove = async (path, data, options) => {
     const response = await fiveCafeHttpRequest.delete(path, data, options);
 
     return response.data;

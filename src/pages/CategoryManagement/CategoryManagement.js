@@ -1,7 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import { object, string } from 'yup';
 import {
     Box,
     Button,
@@ -19,6 +18,22 @@ import {
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
+import useStyles from '~/styles';
+import {
+    createMatCateValidationScheme,
+    createProCateValidationScheme,
+    updateMatCateValidationScheme,
+} from '~/validation/categoriesValidation';
+import {
+    allMatCate,
+    allProCate,
+    createMatCate,
+    createProCate,
+    deleteProCates,
+    updateMatCate,
+    updateProCate,
+} from '~/services/categoriesService';
+import Loader from '~/components/Loader';
 
 // chuyển Tab nha..
 function CustomTabPanel(props) {
@@ -32,11 +47,7 @@ function CustomTabPanel(props) {
             aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
-            {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
+            {value === index && <Box>{children}</Box>}
         </div>
     );
 }
@@ -65,15 +76,21 @@ function CategoryManagement() {
 
     // khai báo danh mục vật liêu
     const [createModalOpens, setCreateModalOpens] = useState(false);
-    const [updateModalOpens, setUpdateModalOpens] = useState(false);
+    const [updateMatCateModalOpen, setUpdateMatCateModalOpen] = useState(false);
+
+    const [proCateDCDOpen, setProCateDCDOpen] = useState(false);
     //end?
 
-    const [selectedRows, setSelectedRows] = useState([]);
+    //data truyen vao
+    const [proCateRows, setProCateRows] = useState([]);
+    const [selectedProCateRows, setselectedProCateRows] = useState([]);
+
     const [successAlert, setSuccessAlert] = useState('');
-    const columns = [
-        { field: 'danhmucID', headerName: 'Danh mục  sản phẩm(ID)', flex: 1 },
-        { field: 'name', headerName: 'Tên sản phẩm', flex: 1 },
-        { field: 'mieuta', headerName: ' Miêu tả', flex: 1 },
+
+    const [proCateColumns] = useState([
+        { field: 'productCategoryID', headerName: 'Mã danh mục sản phẩm', flex: 1 },
+        { field: 'name', headerName: 'Tên danh mục sản phẩm', flex: 1 },
+        { field: 'description', headerName: ' Mô tả', flex: 1 },
 
         {
             field: 'actions',
@@ -82,19 +99,19 @@ function CategoryManagement() {
             renderCell: (params) => {
                 return (
                     <Box>
-                        <Button onClick={handleEdit(params.row)} variant="outlined" color="warning">
+                        <Button onClick={handleEditProCate(params.row)} variant="outlined" color="warning">
                             Chỉnh sửa
                         </Button>
                     </Box>
                 );
             },
         },
-    ];
+    ]);
     // dnah mục vật liệu
-    const columsMaterial = [
-        { field: 'materialCategoryID', headerName: 'Danh mục vật liệu(ID)', flex: 1 },
-        { field: 'name', headerName: 'Tên vật liệu ', flex: 1 },
-        { field: 'mieuta', headerName: 'Miêu Tả', flex: 1 },
+    const matCateColumns = [
+        { field: 'materialCategoryID', headerName: 'Mã danh mục nguyên liệu', flex: 1 },
+        { field: 'name', headerName: 'Tên danh mục nguyên liệu ', flex: 1 },
+        { field: 'description', headerName: 'Mô Tả', flex: 1 },
         {
             field: 'actions',
             headerName: 'Thao tác',
@@ -102,7 +119,7 @@ function CategoryManagement() {
             renderCell: (params) => {
                 return (
                     <Box>
-                        <Button onClick={handleEdits(params.row)} variant="outlined" color="warning">
+                        <Button onClick={handleEditMatCate(params.row)} variant="outlined" color="warning">
                             Chỉnh sửa
                         </Button>
                     </Box>
@@ -111,161 +128,227 @@ function CategoryManagement() {
         },
     ];
 
-    const handleEdits = (row) => {
+    const classes = useStyles();
+
+    const handleEditMatCate = (row) => {
         return (e) => {
             e.stopPropagation();
-            updateFormiks.setValues({
-                ...updateFormiks.values,
+            updateMatCateFormik.setValues({
+                ...updateMatCateFormik.values,
+                materialCategoryID: row.materialCategoryID,
                 name: row.name,
-                mieuta: row.mieuta,
+                description: row.description,
             });
-            setUpdateModalOpen(true);
+            setUpdateMatCateModalOpen(true);
         };
     };
 
     const handleModelChanges = (modelSelected) => {
-        setSelectedRows(rowss.filter((row) => modelSelected.includes(row.id)));
+        setselectedProCateRows(proCateRows.filter((row) => modelSelected.includes(row.id)));
     };
 
-    // bắt lôi chỉnh sữa
-    const updateFormiks = useFormik({
-        initialValues: {
-            name: '',
-            mieuta: '',
-        },
-        validationSchema: object({
-            name: string().required('Tên vât liệu  không được trống '),
-            mieuta: string().required('Miêu tả không đựợc để trống'),
-        }),
-        onSubmit(value) {
-            setUpdateModalOpen(false);
-            setSuccessAlert('Chỉnh sửa danh mục vật liệu  thành công!');
-            setTimeout(() => {
-                setSuccessAlert('');
-            }, 5000);
-        },
-    });
-
-    //  bắt lỗi  nha  thêm danh mục
-    const createFormiks = useFormik({
-        initialValues: {
-            name: '',
-            mieuta: '',
-        },
-        validationSchema: object({
-            name: string().required('Tên vật liệu  không được trống '),
-
-            mieuta: string().required('Miêu tả không đựợc để trống'),
-        }),
-
-        onSubmit(value) {
-            setCreateModalOpen(false);
-            setSuccessAlert('Thêm danh mục vật liệu  thành công!');
-            setTimeout(() => {
-                setSuccessAlert('');
-            }, 5000);
-        },
-    });
-
     //data truyen vao
-    const rowss = [
-        { id: 1, danhmucVatlieuID: 1, name: 'Caffe', mieuta: 'Nó là một thức ăn ngon' },
-        { id: 2, danhmucVatlieuID: 2, name: 'Chuối', mieuta: 'Nó là một thức ăn không được ngon lém' },
-        { id: 3, danhmucVatlieuID: 3, name: 'Bầu', mieuta: 'Nó là một thức ăn ăn được' },
-    ];
+    const [matCateRows, setMatCateRows] = useState([
+        { id: 1, materialCategoryID: 1, name: 'Caffe', description: 'Nó là một thức ăn ngon' },
+        { id: 2, materialCategoryID: 2, name: 'Chuối', description: 'Nó là một thức ăn không được ngon lém' },
+        { id: 3, materialCategoryID: 3, name: 'Bầu', description: 'Nó là một thức ăn ăn được' },
+    ]);
 
     //end danh mục vật liêu nha..
 
-    const handleEdit = (row) => {
+    const handleEditProCate = (row) => {
         return (e) => {
             e.stopPropagation();
-            updateFormik.setValues({
-                ...updateFormik.values,
+            updateProCateFormik.setValues({
+                ...updateProCateFormik.values,
+                productCategoryID: row.productCategoryID,
                 name: row.name,
-                mieuta: row.mieuta,
+                description: row.description,
             });
             setUpdateModalOpen(true);
         };
     };
 
     const handleModelChange = (modelSelected) => {
-        setSelectedRows(rows.filter((row) => modelSelected.includes(row.id)));
+        setselectedProCateRows(proCateRows.filter((row) => modelSelected.includes(row.id)));
     };
 
     // bắt lôi chỉnh sữa
-    const updateFormik = useFormik({
+    const updateProCateFormik = useFormik({
         initialValues: {
+            productCategoryID: null,
             name: '',
-            mieuta: '',
+            description: '',
         },
-        validationSchema: object({
-            name: string().required('Tên nhân danh muc không được trống '),
-            mieuta: string().required('Miêu t không đựợc để trống'),
-        }),
-        onSubmit(value) {
-            setUpdateModalOpen(false);
-            setSuccessAlert('Chỉnh sửa danh mục sản phẩm thành công!');
-            setTimeout(() => {
-                setSuccessAlert('');
-            }, 5000);
+        validationSchema: createProCateValidationScheme,
+        onSubmit(value, { resetForm }) {
+            updateProCate({
+                productCategoryID: value.productCategoryID,
+                name: value.name,
+                description: value.description,
+            }).then((res) => {
+                if (res.status === 200) {
+                    setUpdateModalOpen(false);
+                    setSuccessAlert('Chỉnh sửa danh mục sản phẩm thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    resetForm({
+                        productCategoryID: null,
+                        name: '',
+                        description: '',
+                    });
+                    fetchProCateData();
+                }
+            });
         },
     });
 
-    //  bắt lỗi  nha  thêm danh mục
-    const createFormik = useFormik({
+    const updateMatCateFormik = useFormik({
         initialValues: {
+            materialCategoryID: null,
             name: '',
-            mieuta: '',
+            description: '',
         },
-        validationSchema: object({
-            name: string().required('Tên nhân danh muc không được trống '),
-
-            mieuta: string().required('Miêu ta không đựợc để trống'),
-        }),
-
-        onSubmit(value) {
-            setCreateModalOpen(false);
-            setSuccessAlert('Thêm danh mục sản phẩm thành công!');
-            setTimeout(() => {
-                setSuccessAlert('');
-            }, 5000);
+        validationSchema: updateMatCateValidationScheme,
+        onSubmit(value, { resetForm }) {
+            updateMatCate({
+                materialCategoryID: value.materialCategoryID,
+                name: value.name,
+                description: value.description,
+            }).then((res) => {
+                if (res.status === 200) {
+                    setUpdateMatCateModalOpen(false);
+                    setSuccessAlert('Chỉnh sửa danh mục nguyên liệu thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    fetchMatCateData();
+                    resetForm({
+                        name: '',
+                        description: '',
+                    });
+                }
+            });
         },
     });
 
-    //data truyen vao
-    const rows = [
-        { id: 1, danhmucID: 1, name: 'Caffe', mieuta: 'Nó là một thức ăn ngon' },
-        { id: 2, danhmucID: 2, name: 'Chuối', mieuta: 'Nó là một thức ăn không được ngon lém' },
-        { id: 3, danhmucID: 3, name: 'Bầu', mieuta: 'Nó là một thức ăn ăn được' },
-    ];
+    // bắt lỗi thêm danh mục sp
+    const createProCateFormik = useFormik({
+        initialValues: {
+            name: '',
+            description: '',
+        },
+        validationSchema: createProCateValidationScheme,
+        onSubmit(value, { resetForm }) {
+            createProCate({
+                name: value.name,
+                description: value.description,
+            }).then((res) => {
+                if (res.status === 200) {
+                    setCreateModalOpen(false);
+                    setSuccessAlert('Thêm danh mục sản phẩm thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    fetchProCateData();
+                    resetForm({
+                        name: '',
+                        description: '',
+                    });
+                }
+            });
+        },
+    });
+    // Formik them nguyen lieu
+    const createMatCateFormik = useFormik({
+        initialValues: {
+            name: '',
+            description: '',
+        },
+        validationSchema: createMatCateValidationScheme,
+        onSubmit(value, { resetForm }) {
+            createMatCate({
+                name: value.name,
+                description: value.description,
+            }).then((res) => {
+                if (res.status === 200) {
+                    setCreateModalOpens(false);
+                    setSuccessAlert('Thêm danh mục nguyên liệu thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    fetchMatCateData();
+                    resetForm({
+                        name: '',
+                        description: '',
+                    });
+                }
+            });
+        },
+    });
 
-    //dialog handle
-    const [open, setOpen] = useState(false);
-
-    const handleDelete = () => {
-        //  logic xóa ở đây
-        console.log('Đã xóa');
-        setOpen(false);
+    const handleDeleteProCate = () => {
+        deleteProCates(selectedProCateRows.map((item) => item.productCategoryID)).then((res) => {
+            if (res.status === 200) {
+                setSuccessAlert('Xóa danh mục sản phẩm thành công!');
+                setTimeout(() => {
+                    setSuccessAlert('');
+                }, 5000);
+                fetchProCateData();
+            }
+        });
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleCloseProCateDeleteConfirmation = () => {
+        setProCateDCDOpen(false);
     };
 
     // khai báo chuyển Tab
-
     const [value, setValue] = useState(0);
 
-    const handleChange = (event, newValue) => {
+    const handleChange = (_event, newValue) => {
         setValue(newValue);
     };
-
     // end
+
+    useEffect(() => {
+        fetchProCateData();
+        fetchMatCateData();
+    }, []);
+
+    function fetchProCateData() {
+        // Call API Pro Cate
+        allProCate().then((res) => {
+            setProCateRows(
+                res.data.map((item, index) => ({
+                    id: index + 1,
+                    productCategoryID: item.productCategoryID,
+                    name: item.name,
+                    description: item.description,
+                })),
+            );
+        });
+    }
+
+    function fetchMatCateData() {
+        allMatCate().then((res) => {
+            setMatCateRows(
+                res.data.map((item, index) => ({
+                    id: index + 1,
+                    materialCategoryID: item.materialCategoryID,
+                    name: item.name,
+                    description: item.description,
+                })),
+            );
+        });
+    }
+
     return (
         <>
             <Dialog
-                open={open}
-                onClose={handleClose}
+                open={proCateDCDOpen}
+                onClose={handleCloseProCateDeleteConfirmation}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -274,21 +357,20 @@ function CategoryManagement() {
                     <DialogContentText id="alert-dialog-description">Bạn chắc chắn muốn xoá không?</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleCloseProCateDeleteConfirmation} color="primary">
                         Hủy
                     </Button>
-                    <Button onClick={handleDelete} color="primary" autoFocus>
+                    <Button onClick={handleDeleteProCate} color="primary" autoFocus>
                         Xoá
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Modal của  danh mục nguyên vật liệu nha  */}
-            {/* Modal của cập nhật danh mụ vật liệu  */}
+            {/* Modal của cập nhật danh mục vật liệu  */}
             <Modal
-                open={updateModalOpens}
+                open={updateMatCateModalOpen}
                 onClose={() => {
-                    setUpdateModalOpens(false);
+                    setUpdateMatCateModalOpen(false);
                 }}
             >
                 <Box
@@ -305,29 +387,37 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <form onSubmit={updateFormiks.handleSubmit}>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Chỉnh sửa danh mục nguyên liệu
+                    </Typography>
+                    <form onSubmit={updateMatCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="name"
                                 name="name"
-                                label="Tên danh mục vật liệu"
+                                label="Tên danh mục nguyên liệu"
                                 fullWidth
-                                onChange={updateFormiks.handleChange}
-                                onBlur={updateFormiks.handleBlur}
-                                value={updateFormiks.values.name}
-                                error={updateFormiks.touched.name && Boolean(updateFormiks.errors.name)}
-                                helperText={updateFormiks.touched.name && updateFormiks.errors.name}
+                                onChange={updateMatCateFormik.handleChange}
+                                onBlur={updateMatCateFormik.handleBlur}
+                                value={updateMatCateFormik.values.name}
+                                error={updateMatCateFormik.touched.name && Boolean(updateMatCateFormik.errors.name)}
+                                helperText={updateMatCateFormik.touched.name && updateMatCateFormik.errors.name}
                             />
                             <TextField
-                                id="mieuta"
-                                name="mieuta"
-                                label="Miêu tả vật liệu "
+                                id="description"
+                                name="description"
+                                label="Mô tả"
                                 fullWidth
-                                onChange={updateFormiks.handleChange}
-                                onBlur={updateFormiks.handleBlur}
-                                value={updateFormiks.values.mieuta}
-                                error={updateFormiks.touched.mieuta && Boolean(updateFormiks.errors.mieuta)}
-                                helperText={updateFormiks.touched.mieuta && updateFormiks.errors.mieuta}
+                                onChange={updateMatCateFormik.handleChange}
+                                onBlur={updateMatCateFormik.handleBlur}
+                                value={updateMatCateFormik.values.description}
+                                error={
+                                    updateMatCateFormik.touched.description &&
+                                    Boolean(updateMatCateFormik.errors.description)
+                                }
+                                helperText={
+                                    updateMatCateFormik.touched.description && updateMatCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -338,7 +428,7 @@ function CategoryManagement() {
                     </form>
                 </Box>
             </Modal>
-            {/* Modal của thêm */}
+            {/* Modal của thêm danh mục nguyên liệu */}
             <Modal
                 open={createModalOpens}
                 onClose={() => {
@@ -359,29 +449,37 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <form onSubmit={createFormiks.handleSubmit}>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Thêm danh mục nguyên liệu mới
+                    </Typography>
+                    <form onSubmit={createMatCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="name"
                                 name="name"
                                 label="Tên danh mục vật liệu "
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.name}
-                                error={createFormik.touched.name && Boolean(createFormik.errors.name)}
-                                helperText={createFormik.touched.name && createFormik.errors.name}
+                                onChange={createMatCateFormik.handleChange}
+                                onBlur={createMatCateFormik.handleBlur}
+                                value={createMatCateFormik.values.name}
+                                error={createMatCateFormik.touched.name && Boolean(createMatCateFormik.errors.name)}
+                                helperText={createMatCateFormik.touched.name && createMatCateFormik.errors.name}
                             />
                             <TextField
-                                id="mieuta"
-                                name="mieuta"
+                                id="description"
+                                name="description"
                                 label="Miêu tả vật liệu"
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.mieuta}
-                                error={createFormik.touched.mieuta && Boolean(createFormik.errors.mieuta)}
-                                helperText={createFormik.touched.mieuta && createFormik.errors.mieuta}
+                                onChange={createMatCateFormik.handleChange}
+                                onBlur={createMatCateFormik.handleBlur}
+                                value={createMatCateFormik.values.description}
+                                error={
+                                    createMatCateFormik.touched.description &&
+                                    Boolean(createMatCateFormik.errors.description)
+                                }
+                                helperText={
+                                    createMatCateFormik.touched.description && createMatCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -415,29 +513,37 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <form onSubmit={updateFormik.handleSubmit}>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Cập nhật thông tin danh mục sản phẩm
+                    </Typography>
+                    <form onSubmit={updateProCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="name"
                                 name="name"
                                 label="Tên danh mục sản phẩm"
                                 fullWidth
-                                onChange={updateFormik.handleChange}
-                                onBlur={updateFormik.handleBlur}
-                                value={updateFormik.values.name}
-                                error={updateFormik.touched.name && Boolean(updateFormik.errors.name)}
-                                helperText={updateFormik.touched.name && updateFormik.errors.name}
+                                onChange={updateProCateFormik.handleChange}
+                                onBlur={updateProCateFormik.handleBlur}
+                                value={updateProCateFormik.values.name}
+                                error={updateProCateFormik.touched.name && Boolean(updateProCateFormik.errors.name)}
+                                helperText={updateProCateFormik.touched.name && updateProCateFormik.errors.name}
                             />
                             <TextField
-                                id="mieuta"
-                                name="mieuta"
-                                label="Miêu tả sản phẩm "
+                                id="description"
+                                name="description"
+                                label="Mô tả "
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.mieuta}
-                                error={createFormik.touched.mieuta && Boolean(createFormik.errors.mieuta)}
-                                helperText={createFormik.touched.mieuta && createFormik.errors.mieuta}
+                                onChange={updateProCateFormik.handleChange}
+                                onBlur={updateProCateFormik.handleBlur}
+                                value={updateProCateFormik.values.description}
+                                error={
+                                    updateProCateFormik.touched.description &&
+                                    Boolean(updateProCateFormik.errors.description)
+                                }
+                                helperText={
+                                    updateProCateFormik.touched.description && updateProCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -448,7 +554,7 @@ function CategoryManagement() {
                     </form>
                 </Box>
             </Modal>
-            {/* Modal của thêm sản phẩm  */}
+            {/* Modal của thêm danh mục sản phẩm  */}
             <Modal
                 open={createModalOpen}
                 onClose={() => {
@@ -469,29 +575,37 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <form onSubmit={createFormik.handleSubmit}>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Thêm danh mục sản phẩm mới
+                    </Typography>
+                    <form onSubmit={createProCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="name"
                                 name="name"
                                 label="Tên danh mục sản phẩm "
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.name}
-                                error={createFormik.touched.name && Boolean(createFormik.errors.name)}
-                                helperText={createFormik.touched.name && createFormik.errors.name}
+                                onChange={createProCateFormik.handleChange}
+                                onBlur={createProCateFormik.handleBlur}
+                                value={createProCateFormik.values.name}
+                                error={createProCateFormik.touched.name && Boolean(createProCateFormik.errors.name)}
+                                helperText={createProCateFormik.touched.name && createProCateFormik.errors.name}
                             />
                             <TextField
-                                id="mieuta"
-                                name="mieuta"
-                                label="Miêu tả"
+                                id="description"
+                                name="description"
+                                label="Mô tả"
                                 fullWidth
-                                onChange={createFormik.handleChange}
-                                onBlur={createFormik.handleBlur}
-                                value={createFormik.values.mieuta}
-                                error={createFormik.touched.mieuta && Boolean(createFormik.errors.mieuta)}
-                                helperText={createFormik.touched.mieuta && createFormik.errors.mieuta}
+                                onChange={createProCateFormik.handleChange}
+                                onBlur={createProCateFormik.handleBlur}
+                                value={createProCateFormik.values.description}
+                                error={
+                                    createProCateFormik.touched.description &&
+                                    Boolean(createProCateFormik.errors.description)
+                                }
+                                helperText={
+                                    createProCateFormik.touched.description && createProCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -507,22 +621,27 @@ function CategoryManagement() {
             <>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                        <Tab label="Sản Phẩm" {...a11yProps(0)} />
-                        <Tab label="Vật liệu" {...a11yProps(1)} />
+                        <Tab label="Sản phẩm" {...a11yProps(0)} />
+                        <Tab label="Nguyên liệu" {...a11yProps(1)} />
                     </Tabs>
                 </Box>
             </>
 
+            {/* Panel sản phẩm */}
             <CustomTabPanel value={value} index={0}>
-                <Box sx={{ p: 2 }}>
+                <Box className={classes.pageSpacing}>
                     <Box>
                         <Typography variant="h4" component="h4">
                             Danh mục sản phẩm
                         </Typography>
                         <Typography variant="p" component="p" sx={{ fontSize: 14, color: '#555' }}>
-                            Không nên thao tác vào các thành phần này, vì nó ảnh hưởng tới bảo mật ứng dụng!
+                            Dưới đây là danh sách danh mục sản phẩm!
                         </Typography>
-                        {!!successAlert && <Alert severity="success">{successAlert}</Alert>}
+                        {!!successAlert && (
+                            <Alert severity="success" sx={{ mt: 1 }}>
+                                {successAlert}
+                            </Alert>
+                        )}
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                             <Button
                                 variant="contained"
@@ -530,12 +649,12 @@ function CategoryManagement() {
                                     setCreateModalOpen(true);
                                 }}
                             >
-                                Thêm vào danh mục sản phẩm
+                                Thêm danh mục sản phẩm
                             </Button>
-                            {!!selectedRows.length && (
+                            {!!selectedProCateRows.length && (
                                 <Button
                                     onClick={() => {
-                                        setOpen(true);
+                                        setProCateDCDOpen(true);
                                     }}
                                     sx={{ ml: 1 }}
                                     variant="contained"
@@ -547,32 +666,41 @@ function CategoryManagement() {
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: { page: 0, pageSize: 5 },
-                                },
-                            }}
-                            pageSizeOptions={[5, 10]}
-                            checkboxSelection
-                            onRowSelectionModelChange={handleModelChange}
-                        />
+                        {!!proCateRows?.length ? (
+                            <DataGrid
+                                rows={proCateRows}
+                                columns={proCateColumns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { page: 0, pageSize: 5 },
+                                    },
+                                }}
+                                pageSizeOptions={[5, 10]}
+                                checkboxSelection
+                                onRowSelectionModelChange={handleModelChange}
+                            />
+                        ) : (
+                            <Loader />
+                        )}
                     </Box>
                 </Box>
             </CustomTabPanel>
 
+            {/* Panel nguyên liệu */}
             <CustomTabPanel value={value} index={1}>
-                <Box sx={{ p: 2 }}>
+                <Box className={classes.pageSpacing}>
                     <Box>
                         <Typography variant="h4" component="h4">
-                            Danh mục vật liệu
+                            Danh mục nguyên liệu
                         </Typography>
                         <Typography variant="p" component="p" sx={{ fontSize: 14, color: '#555' }}>
-                            Không nên thao tác vào các thành phần này, vì nó ảnh hưởng tới bảo mật ứng dụng!
+                            Dưới đây là danh sách danh mục nguyên liệu!
                         </Typography>
-                        {!!successAlert && <Alert severity="success">{successAlert}</Alert>}
+                        {!!successAlert && (
+                            <Alert severity="success" sx={{ mt: 1 }}>
+                                {successAlert}
+                            </Alert>
+                        )}
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                             <Button
                                 variant="contained"
@@ -580,12 +708,12 @@ function CategoryManagement() {
                                     setCreateModalOpens(true);
                                 }}
                             >
-                                Thêm vào danh mục vật liệu
+                                Thêm danh mục nguyên liệu mới
                             </Button>
-                            {!!selectedRows.length && (
+                            {!![].length && (
                                 <Button
                                     onClick={() => {
-                                        setOpen(true);
+                                        setProCateDCDOpen(true);
                                     }}
                                     sx={{ ml: 1 }}
                                     variant="contained"
@@ -597,19 +725,23 @@ function CategoryManagement() {
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>
-                        <DataGrid
-                            // truyển tên cột tên bản vào đây
-                            rows={rowss}
-                            columns={columsMaterial}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: { page: 0, pageSize: 5 },
-                                },
-                            }}
-                            pageSizeOptions={[5, 10]}
-                            checkboxSelection
-                            onRowSelectionModelChange={handleModelChanges}
-                        />
+                        {!!matCateRows?.length ? (
+                            <DataGrid
+                                // truyển tên cột tên bản vào đây
+                                rows={matCateRows}
+                                columns={matCateColumns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { page: 0, pageSize: 5 },
+                                    },
+                                }}
+                                pageSizeOptions={[5, 10]}
+                                checkboxSelection
+                                onRowSelectionModelChange={handleModelChanges}
+                            />
+                        ) : (
+                            <Loader />
+                        )}
                     </Box>
                 </Box>
             </CustomTabPanel>
