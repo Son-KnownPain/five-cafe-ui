@@ -31,6 +31,7 @@ const menu = [
     },
     {
         label: 'Quản lí ca làm',
+        path: config.routes.shiftManagement,
     },
     {
         label: 'Quản lí lương',
@@ -47,6 +48,7 @@ const menu = [
     },
     {
         label: 'Quản lí hóa đơn',
+        path: config.routes.billstatusManagement,
     },
     {
         label: 'Quản lí nhập hàng',

@@ -124,7 +124,7 @@ function CategoryManagement() {
     };
 
     const handleModelChanges = (modelSelected) => {
-        setSelectedRows(rows.filter((row) => modelSelected.includes(row.id)));
+        setSelectedRows(rowss.filter((row) => modelSelected.includes(row.id)));
     };
 
     // bắt lôi chỉnh sữa
@@ -323,11 +323,11 @@ function CategoryManagement() {
                                 name="mieuta"
                                 label="Miêu tả vật liệu "
                                 fullWidth
-                                onChange={createFormiks.handleChange}
-                                onBlur={createFormiks.handleBlur}
-                                value={createFormiks.values.mieuta}
-                                error={createFormiks.touched.mieuta && Boolean(createFormiks.errors.mieuta)}
-                                helperText={createFormiks.touched.mieuta && createFormiks.errors.mieuta}
+                                onChange={updateFormiks.handleChange}
+                                onBlur={updateFormiks.handleBlur}
+                                value={updateFormiks.values.mieuta}
+                                error={updateFormiks.touched.mieuta && Boolean(updateFormiks.errors.mieuta)}
+                                helperText={updateFormiks.touched.mieuta && updateFormiks.errors.mieuta}
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
