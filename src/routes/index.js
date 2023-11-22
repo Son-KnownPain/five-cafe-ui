@@ -6,6 +6,8 @@ import RoleManagement from '~/pages/RoleManagement';
 import SupplierManagement from '~/pages/SupplierManament/SupplierManagement';
 import ETKManagement from '~/pages/EtkManagement';
 
+import BillStatusManagement from '~/pages/BillStatusManagement/BillStatusManagement';
+import ShiftManagement from '~/pages/ShiftManagement';
 export const publicRoutes = [];
 
 export const privateRoutes = [
@@ -32,5 +34,14 @@ export const privateRoutes = [
     {
         path: config.routes.etkManagement,
         component: ETKManagement,
+    },
+    {
+        path: config.routes.billStatusManagement,
+        component: BillStatusManagement,
+    },
+
+    {
+        path: config.routes.shiftManagement,
+        component: ShiftManagement,
     },
 ];

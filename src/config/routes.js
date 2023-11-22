@@ -5,6 +5,8 @@ const routes = {
     roleManagement: '/role-management',
     supplierManagement: '/supplier-management',
     etkManagement: 'etk-management',
+    billStatusManagement: '/bills-status-management',
+    shiftManagement: '/shift-management',
 };
 
 export default routes;
