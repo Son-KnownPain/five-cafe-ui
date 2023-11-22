@@ -7,11 +7,21 @@ const styles = {
     minHeight: 200,
 }
 
-function Loader() {
+function Loader({ children, loading = false }) {
     return (
-        <Box sx={styles}>
-            <CircularProgress />
-        </Box>
+        <>
+            {
+                loading ?
+                    (
+                        children
+                    )
+                    : (
+                        <Box sx={styles}>
+                            <CircularProgress />
+                        </Box >
+                    )
+            }
+        </>
     );
 }
 
