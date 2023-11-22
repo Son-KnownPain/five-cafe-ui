@@ -56,6 +56,7 @@ const menu = [
     },
     {
         label: 'Quản lí chấm công',
+        path: config.routes.etkManagement,
     },
     {
         label: 'Quản lí trạng thái',
@@ -66,6 +67,7 @@ const menu = [
     },
     {
         label: 'Quản lí nhà cung cấp',
+        path: config.routes.supplierManagement,
     },
 ];
 

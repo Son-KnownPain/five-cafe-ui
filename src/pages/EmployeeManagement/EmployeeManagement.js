@@ -37,17 +37,18 @@ function EmployeeManagement() {
             headerName: 'Hình ảnh',
             width: 100,
             renderCell: (params) => {
-                return (
-                    <img width="100px" src={params.row.image} alt="EmpImage" />
-                );
+                return <img width="100px" src={params.row.image} alt="EmpImage" />;
             },
         },
         { field: 'name', headerName: 'Tên nhân viên', flex: 1 },
         { field: 'phone', headerName: ' SDT', flex: 1 },
-        { field: 'username', headerName: 'Username', flex: 1, },
-        { field: 'roleName', headerName: 'Chức vụ', flex: 1, },
+        { field: 'username', headerName: 'Username', flex: 1 },
+        { field: 'roleName', headerName: 'Chức vụ', flex: 1 },
         {
-            field: 'actions', headerName: 'Thao tác', flex: 1, renderCell: (params) => {
+            field: 'actions',
+            headerName: 'Thao tác',
+            flex: 1,
+            renderCell: (params) => {
                 return (
                     <Box>
                         <Button onClick={handleEdit(params.row)} variant="outlined" color="warning">
@@ -57,7 +58,7 @@ function EmployeeManagement() {
                 );
             },
         },
-    ])
+    ]);
     const [rows, setRows] = useState(null);
     const [roles, setRoles] = useState([]);
 
@@ -84,42 +85,44 @@ function EmployeeManagement() {
                 username: value.username,
                 password: value.password,
             })
-                .then(res => {
+                .then((res) => {
                     if (res.status === 200) {
                         async function fetchData() {
                             const res = await allEmps();
-                            setRows(res.data.map((item, index) => ({
-                                id: index + 1,
-                                employeeID: item.employeeID,
-                                name: item.name,
-                                phone: item.phone,
-                                image: item.image,
-                                username: item.username,
-                                roleID: item.roleID,
-                                roleName: item.roleName,
-                            })));
+                            setRows(
+                                res.data.map((item, index) => ({
+                                    id: index + 1,
+                                    employeeID: item.employeeID,
+                                    name: item.name,
+                                    phone: item.phone,
+                                    image: item.image,
+                                    username: item.username,
+                                    roleID: item.roleID,
+                                    roleName: item.roleName,
+                                })),
+                            );
                         }
                         fetchData();
                         setUpdateModalOpen(false);
-                        setSuccessAlert('Chỉnh sửa hồ sơ nhân viên thành công!')
+                        setSuccessAlert('Chỉnh sửa hồ sơ nhân viên thành công!');
                         setTimeout(() => {
-                            setSuccessAlert('')
+                            setSuccessAlert('');
                         }, 5000);
-                        setWarningAlert([])
+                        setWarningAlert([]);
                         resetForm({
                             roleID: '',
                             name: '',
                             phone: '',
                             username: '',
                             password: '',
-                        })
+                        });
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     if (err.response) {
-                        setWarningAlert(err.response.data.errors)
+                        setWarningAlert(err.response.data.errors);
                     }
-                })
+                });
         },
     });
 
@@ -143,53 +146,55 @@ function EmployeeManagement() {
                 username: value.username,
                 password: value.password,
             })
-                .then(res => {
+                .then((res) => {
                     if (res.status === 200) {
                         async function fetchData() {
                             const res = await allEmps();
-                            setRows(res.data.map((item, index) => ({
-                                id: index + 1,
-                                employeeID: item.employeeID,
-                                name: item.name,
-                                phone: item.phone,
-                                image: item.image,
-                                username: item.username,
-                                roleID: item.roleID,
-                                roleName: item.roleName,
-                            })));
+                            setRows(
+                                res.data.map((item, index) => ({
+                                    id: index + 1,
+                                    employeeID: item.employeeID,
+                                    name: item.name,
+                                    phone: item.phone,
+                                    image: item.image,
+                                    username: item.username,
+                                    roleID: item.roleID,
+                                    roleName: item.roleName,
+                                })),
+                            );
                         }
                         fetchData();
                         setCreateModalOpen(false);
-                        setSuccessAlert('Thêm hồ sơ nhân viên thành công!')
+                        setSuccessAlert('Thêm hồ sơ nhân viên thành công!');
                         setTimeout(() => {
-                            setSuccessAlert('')
+                            setSuccessAlert('');
                         }, 5000);
-                        setWarningAlert([])
+                        setWarningAlert([]);
                         resetForm({
                             roleID: '',
                             name: '',
                             phone: '',
                             username: '',
                             password: '',
-                        })
+                        });
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     if (err.response) {
-                        setWarningAlert(err.response.data.errors)
+                        setWarningAlert(err.response.data.errors);
                     }
-                })
+                });
         },
     });
 
     //dialog handle
     const handleDelete = () => {
-        deleteEmps(selectedRows.map(item => item.employeeID))
-            .then(res => {
-                if (res.status === 200) {
-                    async function fetchData() {
-                        const res = await allEmps();
-                        setRows(res.data.map((item, index) => ({
+        deleteEmps(selectedRows.map((item) => item.employeeID)).then((res) => {
+            if (res.status === 200) {
+                async function fetchData() {
+                    const res = await allEmps();
+                    setRows(
+                        res.data.map((item, index) => ({
                             id: index + 1,
                             employeeID: item.employeeID,
                             name: item.name,
@@ -198,16 +203,17 @@ function EmployeeManagement() {
                             username: item.username,
                             roleID: item.roleID,
                             roleName: item.roleName,
-                        })));
-                    }
-                    fetchData();
-                    setOpen(false)
-                    setSuccessAlert('Xóa thành công!')
-                    setTimeout(() => {
-                        setSuccessAlert('')
-                    }, 5000);
+                        })),
+                    );
                 }
-            })
+                fetchData();
+                setOpen(false);
+                setSuccessAlert('Xóa thành công!');
+                setTimeout(() => {
+                    setSuccessAlert('');
+                }, 5000);
+            }
+        });
         setOpen(false);
     };
 
@@ -239,28 +245,33 @@ function EmployeeManagement() {
     useEffect(() => {
         async function fetchData() {
             const res = await allEmps();
-            setRows(res.data.map((item, index) => ({
-                id: index + 1,
-                employeeID: item.employeeID,
-                name: item.name,
-                phone: item.phone,
-                image: item.image,
-                username: item.username,
-                roleID: item.roleID,
-                roleName: item.roleName,
-            })));
+            setRows(
+                res.data.map((item, index) => ({
+                    id: index + 1,
+                    employeeID: item.employeeID,
+                    name: item.name,
+                    phone: item.phone,
+                    image: item.image,
+                    username: item.username,
+                    roleID: item.roleID,
+                    roleName: item.roleName,
+                })),
+            );
 
             const rolesRes = await allRoles();
-            setRoles(rolesRes.data.map(item => ({
-                roleID: item.roleID,
-                roleName: item.roleName,
-            })))
+            setRoles(
+                rolesRes.data.map((item) => ({
+                    roleID: item.roleID,
+                    roleName: item.roleName,
+                })),
+            );
         }
         fetchData();
-    }, [])
+    }, []);
 
     return (
         <>
+            {/* thong bao xoa    */}
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -303,22 +314,37 @@ function EmployeeManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography variant="h6" component="h6" mb={2}>Cập nhật thông tin nhân viên</Typography>
-                    {
-                        warningAlert.map((item, index) => (
-                            <Alert key={index} sx={{ mb: 2 }} severity="warning">{item}</Alert>
-                        ))
-                    }
+                    <Typography variant="h6" component="h6" mb={2}>
+                        Cập nhật thông tin nhân viên
+                    </Typography>
+                    {warningAlert.map((item, index) => (
+                        <Alert key={index} sx={{ mb: 2 }} severity="warning">
+                            {item}
+                        </Alert>
+                    ))}
                     <form onSubmit={updateFormik.handleSubmit}>
                         <Stack spacing={2}>
-                            {
-                                (updateFormik.values.imagePreview !== null || updateFormik.values.image !== null) && (
-                                    <img width="100%" src={(updateFormik.values.image !== null && URL.createObjectURL(updateFormik.values.image)) || updateFormik.values.imagePreview} alt={'Img'} />
-                                )
-                            }
+                            {(updateFormik.values.imagePreview !== null || updateFormik.values.image !== null) && (
+                                <img
+                                    width="100%"
+                                    src={
+                                        (updateFormik.values.image !== null &&
+                                            URL.createObjectURL(updateFormik.values.image)) ||
+                                        updateFormik.values.imagePreview
+                                    }
+                                    alt={'Img'}
+                                />
+                            )}
                             <Button component="label" variant="contained">
                                 Tải ảnh lên
-                                <VisuallyHiddenInput onChange={e => { updateFormik.setFieldValue('image', e.currentTarget.files[0]) }} type="file" id="image" name="image" />
+                                <VisuallyHiddenInput
+                                    onChange={(e) => {
+                                        updateFormik.setFieldValue('image', e.currentTarget.files[0]);
+                                    }}
+                                    type="file"
+                                    id="image"
+                                    name="image"
+                                />
                             </Button>
                             <TextField
                                 id="roleID"
@@ -331,8 +357,10 @@ function EmployeeManagement() {
                                 error={updateFormik.touched.roleID && Boolean(updateFormik.errors.roleID)}
                                 helperText={updateFormik.touched.roleID && updateFormik.errors.roleID}
                             >
-                                {roles.map(role => (
-                                    <MenuItem key={role.roleID} value={role.roleID}>{role.roleName}</MenuItem>
+                                {roles.map((role) => (
+                                    <MenuItem key={role.roleID} value={role.roleID}>
+                                        {role.roleName}
+                                    </MenuItem>
                                 ))}
                             </TextField>
                             <TextField
@@ -412,22 +440,29 @@ function EmployeeManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography variant="h6" component="h6" mb={2}>Tạo mới hồ sơ nhân viên</Typography>
-                    {
-                        warningAlert.map((item, index) => (
-                            <Alert key={index} sx={{ mb: 2 }} severity="warning">{item}</Alert>
-                        ))
-                    }
+                    <Typography variant="h6" component="h6" mb={2}>
+                        Tạo mới hồ sơ nhân viên
+                    </Typography>
+                    {warningAlert.map((item, index) => (
+                        <Alert key={index} sx={{ mb: 2 }} severity="warning">
+                            {item}
+                        </Alert>
+                    ))}
                     <form onSubmit={createFormik.handleSubmit}>
                         <Stack spacing={2}>
-                            {
-                                createFormik.values.image !== null && (
-                                    <img width="100%" src={URL.createObjectURL(createFormik.values.image)} alt={'Img'} />
-                                )
-                            }
+                            {createFormik.values.image !== null && (
+                                <img width="100%" src={URL.createObjectURL(createFormik.values.image)} alt={'Img'} />
+                            )}
                             <Button component="label" variant="contained">
                                 Tải ảnh lên
-                                <VisuallyHiddenInput onChange={e => { createFormik.setFieldValue('image', e.currentTarget.files[0]) }} type="file" id="image" name="image" />
+                                <VisuallyHiddenInput
+                                    onChange={(e) => {
+                                        createFormik.setFieldValue('image', e.currentTarget.files[0]);
+                                    }}
+                                    type="file"
+                                    id="image"
+                                    name="image"
+                                />
                             </Button>
                             <TextField
                                 id="roleID"
@@ -440,8 +475,10 @@ function EmployeeManagement() {
                                 error={createFormik.touched.roleID && Boolean(createFormik.errors.roleID)}
                                 helperText={createFormik.touched.roleID && createFormik.errors.roleID}
                             >
-                                {roles.map(role => (
-                                    <MenuItem key={role.roleID} value={role.roleID}>{role.roleName}</MenuItem>
+                                {roles.map((role) => (
+                                    <MenuItem key={role.roleID} value={role.roleID}>
+                                        {role.roleName}
+                                    </MenuItem>
                                 ))}
                             </TextField>
                             <TextField
@@ -506,7 +543,11 @@ function EmployeeManagement() {
                     <Typography variant="p" component="p" sx={{ fontSize: 14, color: '#555' }}>
                         Dưới đây là danh sách thông tin các nhân viên!
                     </Typography>
-                    {!!successAlert && <Alert severity="success" sx={{ mt: 1 }}>{successAlert}</Alert>}
+                    {!!successAlert && (
+                        <Alert severity="success" sx={{ mt: 1 }}>
+                            {successAlert}
+                        </Alert>
+                    )}
                     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                         <Button
                             variant="contained"
@@ -532,25 +573,22 @@ function EmployeeManagement() {
                 </Box>
                 <Loader loading={rows !== null}>
                     <Box sx={{ mt: 2 }}>
-                        {
-                            rows?.length > 0 ?
-                                (
-                                    <DataGrid
-                                        rows={rows}
-                                        columns={columns}
-                                        initialState={{
-                                            pagination: {
-                                                paginationModel: { page: 0, pageSize: 20 },
-                                            },
-                                        }}
-                                        pageSizeOptions={[20, 50]}
-                                        checkboxSelection
-                                        onRowSelectionModelChange={handleModelChange}
-                                    />
-                                ) : (
-                                    <NoDataMessage />
-                                )
-                        }
+                        {rows?.length > 0 ? (
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { page: 0, pageSize: 20 },
+                                    },
+                                }}
+                                pageSizeOptions={[20, 50]}
+                                checkboxSelection
+                                onRowSelectionModelChange={handleModelChange}
+                            />
+                        ) : (
+                            <NoDataMessage />
+                        )}
                     </Box>
                 </Loader>
             </Box>
