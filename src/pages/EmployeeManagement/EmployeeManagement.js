@@ -20,6 +20,8 @@ import { createEmpValidationScheme, updateEmpValidationScheme } from '~/validati
 import Loader from '~/components/Loader';
 import { allEmps, createEmp, deleteEmps, updateEmp } from '~/services/empService';
 import { allRoles } from '~/services/rolesService';
+import NoDataMessage from '~/components/NoDataMessage';
+import VisuallyHiddenInput from './VisuallyHiddenInput';
 
 function EmployeeManagement() {
     // States
@@ -30,7 +32,16 @@ function EmployeeManagement() {
     const [warningAlert, setWarningAlert] = useState([]);
     const [open, setOpen] = useState(false);
     const [columns] = useState([
-        { field: 'employeeID', headerName: 'Mã nhân viên', flex: 1 },
+        {
+            field: 'image',
+            headerName: 'Hình ảnh',
+            width: 100,
+            renderCell: (params) => {
+                return (
+                    <img width="100px" src={params.row.image} alt="EmpImage" />
+                );
+            },
+        },
         { field: 'name', headerName: 'Tên nhân viên', flex: 1 },
         { field: 'phone', headerName: ' SDT', flex: 1 },
         { field: 'username', headerName: 'Username', flex: 1, },
@@ -47,7 +58,7 @@ function EmployeeManagement() {
             },
         },
     ])
-    const [rows, setRows] = useState([]);
+    const [rows, setRows] = useState(null);
     const [roles, setRoles] = useState([]);
 
     //Chinh sua
@@ -57,6 +68,8 @@ function EmployeeManagement() {
             roleID: '',
             name: '',
             phone: '',
+            image: null,
+            imagePreview: null,
             username: '',
             password: '',
         },
@@ -67,6 +80,7 @@ function EmployeeManagement() {
                 roleID: value.roleID,
                 name: value.name,
                 phone: value.phone,
+                image: value.image,
                 username: value.username,
                 password: value.password,
             })
@@ -79,6 +93,7 @@ function EmployeeManagement() {
                                 employeeID: item.employeeID,
                                 name: item.name,
                                 phone: item.phone,
+                                image: item.image,
                                 username: item.username,
                                 roleID: item.roleID,
                                 roleName: item.roleName,
@@ -114,6 +129,7 @@ function EmployeeManagement() {
             roleID: '',
             name: '',
             phone: '',
+            image: null,
             username: '',
             password: '',
         },
@@ -123,6 +139,7 @@ function EmployeeManagement() {
                 roleID: value.roleID,
                 name: value.name,
                 phone: value.phone,
+                image: value.image,
                 username: value.username,
                 password: value.password,
             })
@@ -135,6 +152,7 @@ function EmployeeManagement() {
                                 employeeID: item.employeeID,
                                 name: item.name,
                                 phone: item.phone,
+                                image: item.image,
                                 username: item.username,
                                 roleID: item.roleID,
                                 roleName: item.roleName,
@@ -176,6 +194,7 @@ function EmployeeManagement() {
                             employeeID: item.employeeID,
                             name: item.name,
                             phone: item.phone,
+                            image: item.image,
                             username: item.username,
                             roleID: item.roleID,
                             roleName: item.roleName,
@@ -204,6 +223,7 @@ function EmployeeManagement() {
                 employeeID: row.employeeID,
                 roleID: row.roleID,
                 name: row.name,
+                imagePreview: row.image,
                 phone: row.phone,
                 username: row.username,
                 password: '',
@@ -224,6 +244,7 @@ function EmployeeManagement() {
                 employeeID: item.employeeID,
                 name: item.name,
                 phone: item.phone,
+                image: item.image,
                 username: item.username,
                 roleID: item.roleID,
                 roleName: item.roleName,
@@ -274,6 +295,8 @@ function EmployeeManagement() {
                         transform: 'translate(-50%, -50%)',
                         width: 800,
                         maxWidth: '90%',
+                        maxHeight: '100%',
+                        overflowY: 'auto',
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         borderRadius: 2,
@@ -288,6 +311,15 @@ function EmployeeManagement() {
                     }
                     <form onSubmit={updateFormik.handleSubmit}>
                         <Stack spacing={2}>
+                            {
+                                (updateFormik.values.imagePreview !== null || updateFormik.values.image !== null) && (
+                                    <img width="100%" src={(updateFormik.values.image !== null && URL.createObjectURL(updateFormik.values.image)) || updateFormik.values.imagePreview} alt={'Img'} />
+                                )
+                            }
+                            <Button component="label" variant="contained">
+                                Tải ảnh lên
+                                <VisuallyHiddenInput onChange={e => { updateFormik.setFieldValue('image', e.currentTarget.files[0]) }} type="file" id="image" name="image" />
+                            </Button>
                             <TextField
                                 id="roleID"
                                 name="roleID"
@@ -372,6 +404,8 @@ function EmployeeManagement() {
                         transform: 'translate(-50%, -50%)',
                         width: 800,
                         maxWidth: '90%',
+                        maxHeight: '100%',
+                        overflowY: 'auto',
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         borderRadius: 2,
@@ -384,13 +418,17 @@ function EmployeeManagement() {
                             <Alert key={index} sx={{ mb: 2 }} severity="warning">{item}</Alert>
                         ))
                     }
-                    {
-                        warningAlert.map((item, index) => (
-                            <Alert key={index} sx={{ mb: 2 }} severity="warning">{item}</Alert>
-                        ))
-                    }
                     <form onSubmit={createFormik.handleSubmit}>
                         <Stack spacing={2}>
+                            {
+                                createFormik.values.image !== null && (
+                                    <img width="100%" src={URL.createObjectURL(createFormik.values.image)} alt={'Img'} />
+                                )
+                            }
+                            <Button component="label" variant="contained">
+                                Tải ảnh lên
+                                <VisuallyHiddenInput onChange={e => { createFormik.setFieldValue('image', e.currentTarget.files[0]) }} type="file" id="image" name="image" />
+                            </Button>
                             <TextField
                                 id="roleID"
                                 name="roleID"
@@ -492,27 +530,29 @@ function EmployeeManagement() {
                         )}
                     </Box>
                 </Box>
-                {
-                    !!rows.length ?
-                        (
-                            <Box sx={{ mt: 2 }}>
-                                <DataGrid
-                                    rows={rows}
-                                    columns={columns}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: { page: 0, pageSize: 20 },
-                                        },
-                                    }}
-                                    pageSizeOptions={[20, 50]}
-                                    checkboxSelection
-                                    onRowSelectionModelChange={handleModelChange}
-                                />
-                            </Box>
-                        ) : (
-                            <Loader />
-                        )
-                }
+                <Loader loading={rows !== null}>
+                    <Box sx={{ mt: 2 }}>
+                        {
+                            rows?.length > 0 ?
+                                (
+                                    <DataGrid
+                                        rows={rows}
+                                        columns={columns}
+                                        initialState={{
+                                            pagination: {
+                                                paginationModel: { page: 0, pageSize: 20 },
+                                            },
+                                        }}
+                                        pageSizeOptions={[20, 50]}
+                                        checkboxSelection
+                                        onRowSelectionModelChange={handleModelChange}
+                                    />
+                                ) : (
+                                    <NoDataMessage />
+                                )
+                        }
+                    </Box>
+                </Loader>
             </Box>
         </>
     );

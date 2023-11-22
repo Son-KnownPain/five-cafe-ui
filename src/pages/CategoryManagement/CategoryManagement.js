@@ -19,21 +19,10 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
 import useStyles from '~/styles';
-import {
-    createMatCateValidationScheme,
-    createProCateValidationScheme,
-    updateMatCateValidationScheme,
-} from '~/validation/categoriesValidation';
-import {
-    allMatCate,
-    allProCate,
-    createMatCate,
-    createProCate,
-    deleteProCates,
-    updateMatCate,
-    updateProCate,
-} from '~/services/categoriesService';
+import { createMatCateValidationScheme, createProCateValidationScheme, updateMatCateValidationScheme } from '~/validation/categoriesValidation';
+import { allMatCate, allProCate, createMatCate, createProCate, deleteMatCates, deleteProCates, updateMatCate, updateProCate } from '~/services/categoriesService';
 import Loader from '~/components/Loader';
+import NoDataMessage from '~/components/NoDataMessage';
 
 // chuyển Tab nha..
 function CustomTabPanel(props) {
@@ -78,12 +67,17 @@ function CategoryManagement() {
     const [createModalOpens, setCreateModalOpens] = useState(false);
     const [updateMatCateModalOpen, setUpdateMatCateModalOpen] = useState(false);
 
-    const [proCateDCDOpen, setProCateDCDOpen] = useState(false);
     //end?
 
     //data truyen vao
-    const [proCateRows, setProCateRows] = useState([]);
-    const [selectedProCateRows, setselectedProCateRows] = useState([]);
+    const [proCateRows, setProCateRows] = useState(null)
+    const [matCateRows, setMatCateRows] = useState(null);
+
+    const [selectedProCateRows, setSelectedProCateRows] = useState([]);
+    const [selectedMatCateRows, setSelectedMatCateRows] = useState([]);
+
+    const [proCateDCDOpen, setProCateDCDOpen] = useState(false);
+    const [matCateDCDOpen, setMatCateDCDOpen] = useState(false);
 
     const [successAlert, setSuccessAlert] = useState('');
 
@@ -108,7 +102,7 @@ function CategoryManagement() {
         },
     ]);
     // dnah mục vật liệu
-    const matCateColumns = [
+    const [matCateColumns] = useState([
         { field: 'materialCategoryID', headerName: 'Mã danh mục nguyên liệu', flex: 1 },
         { field: 'name', headerName: 'Tên danh mục nguyên liệu ', flex: 1 },
         { field: 'description', headerName: 'Mô Tả', flex: 1 },
@@ -126,7 +120,7 @@ function CategoryManagement() {
                 );
             },
         },
-    ];
+    ]);
 
     const classes = useStyles();
 
@@ -142,17 +136,6 @@ function CategoryManagement() {
             setUpdateMatCateModalOpen(true);
         };
     };
-
-    const handleModelChanges = (modelSelected) => {
-        setselectedProCateRows(proCateRows.filter((row) => modelSelected.includes(row.id)));
-    };
-
-    //data truyen vao
-    const [matCateRows, setMatCateRows] = useState([
-        { id: 1, materialCategoryID: 1, name: 'Caffe', description: 'Nó là một thức ăn ngon' },
-        { id: 2, materialCategoryID: 2, name: 'Chuối', description: 'Nó là một thức ăn không được ngon lém' },
-        { id: 3, materialCategoryID: 3, name: 'Bầu', description: 'Nó là một thức ăn ăn được' },
-    ]);
 
     //end danh mục vật liêu nha..
 
@@ -170,7 +153,11 @@ function CategoryManagement() {
     };
 
     const handleModelChange = (modelSelected) => {
-        setselectedProCateRows(proCateRows.filter((row) => modelSelected.includes(row.id)));
+        setSelectedProCateRows(proCateRows.filter((row) => modelSelected.includes(row.id)));
+    };
+
+    const handleMatModalChange = (modelSelected) => {
+        setSelectedMatCateRows(matCateRows.filter((row) => modelSelected.includes(row.id)));
     };
 
     // bắt lôi chỉnh sữa
@@ -289,15 +276,31 @@ function CategoryManagement() {
     });
 
     const handleDeleteProCate = () => {
-        deleteProCates(selectedProCateRows.map((item) => item.productCategoryID)).then((res) => {
-            if (res.status === 200) {
-                setSuccessAlert('Xóa danh mục sản phẩm thành công!');
-                setTimeout(() => {
-                    setSuccessAlert('');
-                }, 5000);
-                fetchProCateData();
-            }
-        });
+        deleteProCates(selectedProCateRows.map(item => item.productCategoryID))
+            .then(res => {
+                if (res.status === 200) {
+                    setSuccessAlert('Xóa danh mục sản phẩm thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    setProCateDCDOpen(false);
+                    fetchProCateData();
+                }
+            })
+    };
+
+    const handleDeleteMatCate = () => {
+        deleteMatCates(selectedMatCateRows.map(item => item.materialCategoryID))
+            .then(res => {
+                if (res.status === 200) {
+                    setSuccessAlert('Xóa danh mục nguyên liệu thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    setMatCateDCDOpen(false);
+                    fetchMatCateData();
+                }
+            })
     };
 
     const handleCloseProCateDeleteConfirmation = () => {
@@ -346,6 +349,7 @@ function CategoryManagement() {
 
     return (
         <>
+            {/* Dialog sản phẩm */}
             <Dialog
                 open={proCateDCDOpen}
                 onClose={handleCloseProCateDeleteConfirmation}
@@ -361,6 +365,26 @@ function CategoryManagement() {
                         Hủy
                     </Button>
                     <Button onClick={handleDeleteProCate} color="primary" autoFocus>
+                        Xoá
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {/* Dialog nguyên liệu */}
+            <Dialog
+                open={matCateDCDOpen}
+                onClose={() => { setMatCateDCDOpen(false) }}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Xác nhận xoá</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">Bạn chắc chắn muốn xoá không?</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { setMatCateDCDOpen(false) }} color="primary">
+                        Hủy
+                    </Button>
+                    <Button onClick={handleDeleteMatCate} color="primary" autoFocus>
                         Xoá
                     </Button>
                 </DialogActions>
@@ -665,24 +689,28 @@ function CategoryManagement() {
                             )}
                         </Box>
                     </Box>
-                    <Box sx={{ mt: 2 }}>
-                        {!!proCateRows?.length ? (
-                            <DataGrid
-                                rows={proCateRows}
-                                columns={proCateColumns}
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: { page: 0, pageSize: 5 },
-                                    },
-                                }}
-                                pageSizeOptions={[5, 10]}
-                                checkboxSelection
-                                onRowSelectionModelChange={handleModelChange}
-                            />
-                        ) : (
-                            <Loader />
-                        )}
-                    </Box>
+                    <Loader loading={proCateRows !== null}>
+                        <Box sx={{ mt: 2 }}>
+                            {
+                                proCateRows?.length > 0 ? (
+                                    <DataGrid
+                                        rows={proCateRows}
+                                        columns={proCateColumns}
+                                        initialState={{
+                                            pagination: {
+                                                paginationModel: { page: 0, pageSize: 5 },
+                                            },
+                                        }}
+                                        pageSizeOptions={[5, 10]}
+                                        checkboxSelection
+                                        onRowSelectionModelChange={handleModelChange}
+                                    />
+                                ) : (
+                                    <NoDataMessage />
+                                )
+                            }
+                        </Box>
+                    </Loader>
                 </Box>
             </CustomTabPanel>
 
@@ -710,10 +738,10 @@ function CategoryManagement() {
                             >
                                 Thêm danh mục nguyên liệu mới
                             </Button>
-                            {!![].length && (
+                            {!!selectedMatCateRows.length && (
                                 <Button
                                     onClick={() => {
-                                        setProCateDCDOpen(true);
+                                        setMatCateDCDOpen(true);
                                     }}
                                     sx={{ ml: 1 }}
                                     variant="contained"
@@ -725,23 +753,28 @@ function CategoryManagement() {
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>
-                        {!!matCateRows?.length ? (
-                            <DataGrid
-                                // truyển tên cột tên bản vào đây
-                                rows={matCateRows}
-                                columns={matCateColumns}
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: { page: 0, pageSize: 5 },
-                                    },
-                                }}
-                                pageSizeOptions={[5, 10]}
-                                checkboxSelection
-                                onRowSelectionModelChange={handleModelChanges}
-                            />
-                        ) : (
-                            <Loader />
-                        )}
+                        <Loader loading={matCateRows !== null}>
+                            {
+                                matCateRows?.length > 0 ? (
+                                    <DataGrid
+                                        // truyển tên cột tên bản vào đây
+                                        rows={matCateRows}
+                                        columns={matCateColumns}
+                                        initialState={{
+                                            pagination: {
+                                                paginationModel: { page: 0, pageSize: 5 },
+                                            },
+                                        }}
+                                        pageSizeOptions={[5, 10]}
+                                        checkboxSelection
+                                        onRowSelectionModelChange={handleMatModalChange}
+                                    />
+                                ) : (
+                                    <NoDataMessage />
+                                )
+                            }
+                        </Loader>
+
                     </Box>
                 </Box>
             </CustomTabPanel>
