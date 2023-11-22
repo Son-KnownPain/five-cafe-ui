@@ -23,18 +23,18 @@ function ShiftManagement() {
     const [selectedRows, setSelectedRows] = useState([]);
     const [successAlert, setSuccessAlert] = useState('');
 
-    const shiftCollumn = [
+    const [shiftCollumn] = useState([
         { field: 'shiftID', headerName: 'Mã ca làm ', flex: 1 },
-        { field: 'name', headerName: 'Tên nhân viên', flex: 1 },
-        { field: 'salaryPH', headerName: 'Lương theo giờ', flex: 1 },
+        { field: 'name', headerName: 'Ca làm ', flex: 1 },
+        { field: 'salary', headerName: 'Lương theo ca', flex: 1 },
         {
             field: 'timeFrom',
-            headerName: 'Thời gian From',
+            headerName: 'Bắt đầu từ lúc',
             flex: 1,
         },
         {
             field: 'timeTo',
-            headerName: 'Thời Gian To',
+            headerName: 'Kết thúc vào lúc',
             flex: 1,
         },
         {
@@ -51,14 +51,14 @@ function ShiftManagement() {
                 );
             },
         },
-    ];
+    ]);
     const handleEdit = (row) => {
         return (e) => {
             e.stopPropagation();
             updateFormik.setValues({
                 ...updateFormik.values,
                 name: row.name,
-                salaryPH: row.salaryPH,
+                salary: row.salary,
                 timeFrom: row.timeFrom,
                 timeTo: row.timeTo,
             });
@@ -74,17 +74,17 @@ function ShiftManagement() {
     const updateFormik = useFormik({
         initialValues: {
             name: '',
-            salaryPH: '',
+            salary: '',
             timeFrom: '',
             timeTo: '',
         },
         validationSchema: object({
-            name: string().required('Tên nhân viên là bắt buộc'),
-            salaryPH: string().required('Số điện thoại là bắt buộc'),
+            name: string().required('Tên  ca làm  là bắt buộc'),
+            salary: string().required(' Lương theo ca là bắt buộc'),
         }),
         onSubmit(value) {
             setUpdateModalOpen(false);
-            setSuccessAlert('Chỉnh sửa nhân viên thành công!');
+            setSuccessAlert('Chỉnh sửa  ca làm  thành công!');
             setTimeout(() => {
                 setSuccessAlert('');
             }, 5000);
@@ -95,17 +95,17 @@ function ShiftManagement() {
     const createFormik = useFormik({
         initialValues: {
             name: '',
-            salaryPH: '',
+            salary: '',
             timeFrom: '',
             timeTo: '',
         },
         validationSchema: object({
-            name: string().required('Tên nhân viên là bắt buộc'),
-            salaryPH: string().required('Lương theo giờ nhân viên  là bắt buộc'),
+            name: string().required('Tên  ca làm  là bắt buộc'),
+            salary: string().required('Lương theo ca là bắt buộc'),
         }),
         onSubmit(value) {
             setCreateModalOpen(false);
-            setSuccessAlert('Thêm nhân viên thành công!');
+            setSuccessAlert('Thêm ca làm thành công!');
             setTimeout(() => {
                 setSuccessAlert('');
             }, 5000);
@@ -113,9 +113,9 @@ function ShiftManagement() {
     });
     //data truyen vao
     const Shiftrows = [
-        { id: 1, shiftID: 1, name: 'Hoang', salaryPH: '17', timeFrom: '11/12/2023', timeTo: '11/12/2023' },
-        { id: 2, shiftID: 2, name: 'Lê Ngoc Hải', salaryPH: '20', timeFrom: '11/12/2023', timeTo: '11/12/2023' },
-        { id: 3, shiftID: 3, name: 'Nguyễn Hồng sơn ', salaryPH: '20', timeFrom: '11/12/2023', timeTo: '11/12/2023' },
+        { id: 1, shiftID: 1, name: 'Hoang', salary: '17', timeFrom: '11/12/2023', timeTo: '11/12/2023' },
+        { id: 2, shiftID: 2, name: 'Lê Ngoc Hải', salary: '20', timeFrom: '11/12/2023', timeTo: '11/12/2023' },
+        { id: 3, shiftID: 3, name: 'Nguyễn Hồng sơn ', salary: '20', timeFrom: '11/12/2023', timeTo: '11/12/2023' },
     ];
     //dialog handle
     const [open, setOpen] = useState(false);
@@ -172,15 +172,15 @@ function ShiftManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography variant="h4" component="h4">
-                        Quản lý ca làm nhân viên
+                    <Typography variant="h6" component="h6" mb={2}>
+                        Chỉnh Sửa Ca Làm
                     </Typography>
                     <form onSubmit={updateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="name"
                                 name="name"
-                                label="Tên nhân viên"
+                                label="Tên ca làm "
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
@@ -189,20 +189,20 @@ function ShiftManagement() {
                                 helperText={updateFormik.touched.name && updateFormik.errors.name}
                             />
                             <TextField
-                                id="salaryPH"
-                                name="salaryPH"
-                                label="Lương theo giờ"
+                                id="salary"
+                                name="salary"
+                                label="Lương theo ca"
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
-                                value={updateFormik.values.salaryPH}
-                                error={updateFormik.touched.salaryPH && Boolean(updateFormik.errors.salaryPH)}
-                                helperText={updateFormik.touched.salaryPH && updateFormik.errors.salaryPH}
+                                value={updateFormik.values.salary}
+                                error={updateFormik.touched.salary && Boolean(updateFormik.errors.salary)}
+                                helperText={updateFormik.touched.salary && updateFormik.errors.salary}
                             />
                             <TextField
                                 id="timeFrom"
                                 name="timeFrom"
-                                label="TimeFrom"
+                                label="Bắt đầu vào lúc"
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
@@ -213,7 +213,7 @@ function ShiftManagement() {
                             <TextField
                                 id="timeTo"
                                 name="timeTo"
-                                label="TimeTo"
+                                label="Kết thúc vào lúc"
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
@@ -251,15 +251,15 @@ function ShiftManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography variant="h4" component="h4">
-                        Quản lý ca làm nhân viên
+                    <Typography variant="h6" component="h6" mb={2}>
+                        Thêm Ca Làm Mới
                     </Typography>
                     <form onSubmit={createFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="name"
                                 name="name"
-                                label="Tên nhân viên"
+                                label="Tên ca làm"
                                 fullWidth
                                 onChange={createFormik.handleChange}
                                 onBlur={createFormik.handleBlur}
@@ -268,20 +268,20 @@ function ShiftManagement() {
                                 helperText={createFormik.touched.name && createFormik.errors.name}
                             />
                             <TextField
-                                id="phone"
-                                name="phone"
-                                label="Lương theo giờ"
+                                id="salary"
+                                name="salary"
+                                label="Lương theo ca"
                                 fullWidth
                                 onChange={createFormik.handleChange}
                                 onBlur={createFormik.handleBlur}
-                                value={createFormik.values.phone}
-                                error={createFormik.touched.phone && Boolean(createFormik.errors.phone)}
-                                helperText={createFormik.touched.phone && createFormik.errors.phone}
+                                value={createFormik.values.salary}
+                                error={createFormik.touched.salary && Boolean(createFormik.errors.salary)}
+                                helperText={createFormik.touched.salary && createFormik.errors.salary}
                             />
                             <TextField
                                 id="timeFrom"
                                 name="timeFrom"
-                                label="TimeFrom"
+                                label="Bắt đàu vào lúc"
                                 fullWidth
                                 onChange={createFormik.handleChange}
                                 onBlur={createFormik.handleBlur}
@@ -292,7 +292,7 @@ function ShiftManagement() {
                             <TextField
                                 id="timeTo"
                                 name="timeTo"
-                                label="timeTo"
+                                label="Kết thúc vào lúc"
                                 fullWidth
                                 onChange={createFormik.handleChange}
                                 onBlur={createFormik.handleBlur}
@@ -325,7 +325,7 @@ function ShiftManagement() {
                                 setCreateModalOpen(true);
                             }}
                         >
-                            Thêm ca làm nhân viên
+                            Thêm ca làm
                         </Button>
                         {!!selectedRows.length && (
                             <Button

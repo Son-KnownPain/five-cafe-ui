@@ -49,7 +49,7 @@ const menu = [
     },
     {
         label: 'Quản lí hóa đơn',
-        path: config.routes.billstatusManagement,
+        path: config.routes.billStatusManagement,
     },
     {
         label: 'Quản lí nhập hàng',
