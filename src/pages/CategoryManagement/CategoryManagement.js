@@ -36,11 +36,7 @@ function CustomTabPanel(props) {
             aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
-            {value === index && (
-                <Box>
-                    {children}
-                </Box>
-            )}
+            {value === index && <Box>{children}</Box>}
         </div>
     );
 }
@@ -177,22 +173,21 @@ function CategoryManagement() {
                 productCategoryID: value.productCategoryID,
                 name: value.name,
                 description: value.description,
-            })
-                .then(res => {
-                    if (res.status === 200) {
-                        setUpdateModalOpen(false);
-                        setSuccessAlert('Chỉnh sửa danh mục sản phẩm thành công!');
-                        setTimeout(() => {
-                            setSuccessAlert('');
-                        }, 5000);
-                        resetForm({
-                            productCategoryID: null,
-                            name: '',
-                            description: '',
-                        })
-                        fetchProCateData();
-                    }
-                })
+            }).then((res) => {
+                if (res.status === 200) {
+                    setUpdateModalOpen(false);
+                    setSuccessAlert('Chỉnh sửa danh mục sản phẩm thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    resetForm({
+                        productCategoryID: null,
+                        name: '',
+                        description: '',
+                    });
+                    fetchProCateData();
+                }
+            });
         },
     });
 
@@ -208,21 +203,20 @@ function CategoryManagement() {
                 materialCategoryID: value.materialCategoryID,
                 name: value.name,
                 description: value.description,
-            })
-                .then(res => {
-                    if (res.status === 200) {
-                        setUpdateMatCateModalOpen(false);
-                        setSuccessAlert('Chỉnh sửa danh mục nguyên liệu thành công!');
-                        setTimeout(() => {
-                            setSuccessAlert('');
-                        }, 5000);
-                        fetchMatCateData();
-                        resetForm({
-                            name: '',
-                            description: '',
-                        })
-                    }
-                })
+            }).then((res) => {
+                if (res.status === 200) {
+                    setUpdateMatCateModalOpen(false);
+                    setSuccessAlert('Chỉnh sửa danh mục nguyên liệu thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    fetchMatCateData();
+                    resetForm({
+                        name: '',
+                        description: '',
+                    });
+                }
+            });
         },
     });
 
@@ -237,21 +231,20 @@ function CategoryManagement() {
             createProCate({
                 name: value.name,
                 description: value.description,
-            })
-                .then(res => {
-                    if (res.status === 200) {
-                        setCreateModalOpen(false);
-                        setSuccessAlert('Thêm danh mục sản phẩm thành công!');
-                        setTimeout(() => {
-                            setSuccessAlert('');
-                        }, 5000);
-                        fetchProCateData();
-                        resetForm({
-                            name: '',
-                            description: '',
-                        })
-                    }
-                })
+            }).then((res) => {
+                if (res.status === 200) {
+                    setCreateModalOpen(false);
+                    setSuccessAlert('Thêm danh mục sản phẩm thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    fetchProCateData();
+                    resetForm({
+                        name: '',
+                        description: '',
+                    });
+                }
+            });
         },
     });
     // Formik them nguyen lieu
@@ -265,21 +258,20 @@ function CategoryManagement() {
             createMatCate({
                 name: value.name,
                 description: value.description,
-            })
-                .then(res => {
-                    if (res.status === 200) {
-                        setCreateModalOpens(false);
-                        setSuccessAlert('Thêm danh mục nguyên liệu thành công!');
-                        setTimeout(() => {
-                            setSuccessAlert('');
-                        }, 5000);
-                        fetchMatCateData();
-                        resetForm({
-                            name: '',
-                            description: '',
-                        })
-                    }
-                })
+            }).then((res) => {
+                if (res.status === 200) {
+                    setCreateModalOpens(false);
+                    setSuccessAlert('Thêm danh mục nguyên liệu thành công!');
+                    setTimeout(() => {
+                        setSuccessAlert('');
+                    }, 5000);
+                    fetchMatCateData();
+                    resetForm({
+                        name: '',
+                        description: '',
+                    });
+                }
+            });
         },
     });
 
@@ -326,25 +318,33 @@ function CategoryManagement() {
     useEffect(() => {
         fetchProCateData();
         fetchMatCateData();
-    }, [])
+    }, []);
 
     function fetchProCateData() {
         // Call API Pro Cate
-        allProCate()
-            .then(res => {
-                setProCateRows(res.data.map((item, index) => ({
-                    id: index + 1, productCategoryID: item.productCategoryID, name: item.name, description: item.description,
-                })))
-            })
-    };
+        allProCate().then((res) => {
+            setProCateRows(
+                res.data.map((item, index) => ({
+                    id: index + 1,
+                    productCategoryID: item.productCategoryID,
+                    name: item.name,
+                    description: item.description,
+                })),
+            );
+        });
+    }
 
     function fetchMatCateData() {
-        allMatCate()
-            .then(res => {
-                setMatCateRows(res.data.map((item, index) => ({
-                    id: index + 1, materialCategoryID: item.materialCategoryID, name: item.name, description: item.description,
-                })))
-            })
+        allMatCate().then((res) => {
+            setMatCateRows(
+                res.data.map((item, index) => ({
+                    id: index + 1,
+                    materialCategoryID: item.materialCategoryID,
+                    name: item.name,
+                    description: item.description,
+                })),
+            );
+        });
     }
 
     return (
@@ -411,7 +411,9 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography component="h6" variant='h6' mb={2}>Chỉnh sửa danh mục nguyên liệu</Typography>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Chỉnh sửa danh mục nguyên liệu
+                    </Typography>
                     <form onSubmit={updateMatCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
@@ -433,8 +435,13 @@ function CategoryManagement() {
                                 onChange={updateMatCateFormik.handleChange}
                                 onBlur={updateMatCateFormik.handleBlur}
                                 value={updateMatCateFormik.values.description}
-                                error={updateMatCateFormik.touched.description && Boolean(updateMatCateFormik.errors.description)}
-                                helperText={updateMatCateFormik.touched.description && updateMatCateFormik.errors.description}
+                                error={
+                                    updateMatCateFormik.touched.description &&
+                                    Boolean(updateMatCateFormik.errors.description)
+                                }
+                                helperText={
+                                    updateMatCateFormik.touched.description && updateMatCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -466,7 +473,9 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography component="h6" variant='h6' mb={2}>Thêm danh mục nguyên liệu mới</Typography>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Thêm danh mục nguyên liệu mới
+                    </Typography>
                     <form onSubmit={createMatCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
@@ -488,8 +497,13 @@ function CategoryManagement() {
                                 onChange={createMatCateFormik.handleChange}
                                 onBlur={createMatCateFormik.handleBlur}
                                 value={createMatCateFormik.values.description}
-                                error={createMatCateFormik.touched.description && Boolean(createMatCateFormik.errors.description)}
-                                helperText={createMatCateFormik.touched.description && createMatCateFormik.errors.description}
+                                error={
+                                    createMatCateFormik.touched.description &&
+                                    Boolean(createMatCateFormik.errors.description)
+                                }
+                                helperText={
+                                    createMatCateFormik.touched.description && createMatCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -523,7 +537,9 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography component="h6" variant='h6' mb={2}>Cập nhật thông tin danh mục sản phẩm</Typography>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Cập nhật thông tin danh mục sản phẩm
+                    </Typography>
                     <form onSubmit={updateProCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
@@ -545,8 +561,13 @@ function CategoryManagement() {
                                 onChange={updateProCateFormik.handleChange}
                                 onBlur={updateProCateFormik.handleBlur}
                                 value={updateProCateFormik.values.description}
-                                error={updateProCateFormik.touched.description && Boolean(updateProCateFormik.errors.description)}
-                                helperText={updateProCateFormik.touched.description && updateProCateFormik.errors.description}
+                                error={
+                                    updateProCateFormik.touched.description &&
+                                    Boolean(updateProCateFormik.errors.description)
+                                }
+                                helperText={
+                                    updateProCateFormik.touched.description && updateProCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -578,7 +599,9 @@ function CategoryManagement() {
                         p: 3,
                     }}
                 >
-                    <Typography component="h6" variant='h6' mb={2}>Thêm danh mục sản phẩm mới</Typography>
+                    <Typography component="h6" variant="h6" mb={2}>
+                        Thêm danh mục sản phẩm mới
+                    </Typography>
                     <form onSubmit={createProCateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
@@ -600,8 +623,13 @@ function CategoryManagement() {
                                 onChange={createProCateFormik.handleChange}
                                 onBlur={createProCateFormik.handleBlur}
                                 value={createProCateFormik.values.description}
-                                error={createProCateFormik.touched.description && Boolean(createProCateFormik.errors.description)}
-                                helperText={createProCateFormik.touched.description && createProCateFormik.errors.description}
+                                error={
+                                    createProCateFormik.touched.description &&
+                                    Boolean(createProCateFormik.errors.description)
+                                }
+                                helperText={
+                                    createProCateFormik.touched.description && createProCateFormik.errors.description
+                                }
                             />
                         </Stack>
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -633,7 +661,11 @@ function CategoryManagement() {
                         <Typography variant="p" component="p" sx={{ fontSize: 14, color: '#555' }}>
                             Dưới đây là danh sách danh mục sản phẩm!
                         </Typography>
-                        {!!successAlert && <Alert severity="success" sx={{ mt: 1 }}>{successAlert}</Alert>}
+                        {!!successAlert && (
+                            <Alert severity="success" sx={{ mt: 1 }}>
+                                {successAlert}
+                            </Alert>
+                        )}
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                             <Button
                                 variant="contained"
@@ -692,7 +724,11 @@ function CategoryManagement() {
                         <Typography variant="p" component="p" sx={{ fontSize: 14, color: '#555' }}>
                             Dưới đây là danh sách danh mục nguyên liệu!
                         </Typography>
-                        {!!successAlert && <Alert severity="success" sx={{ mt: 1 }}>{successAlert}</Alert>}
+                        {!!successAlert && (
+                            <Alert severity="success" sx={{ mt: 1 }}>
+                                {successAlert}
+                            </Alert>
+                        )}
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                             <Button
                                 variant="contained"
