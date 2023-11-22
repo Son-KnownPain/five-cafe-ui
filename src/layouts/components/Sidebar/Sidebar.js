@@ -54,6 +54,7 @@ const menu = [
     },
     {
         label: 'Quản lí chấm công',
+        path: config.routes.etkManagement,
     },
     {
         label: 'Quản lí trạng thái',

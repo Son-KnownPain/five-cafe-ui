@@ -4,6 +4,7 @@ import Home from '~/pages/Home';
 import CategoryManagement from '~/pages/CategoryManagement';
 import RoleManagement from '~/pages/RoleManagement';
 import SupplierManagement from '~/pages/SupplierManament/SupplierManagement';
+import ETKManagement from '~/pages/EtkManagement';
 
 export const publicRoutes = [];
 
@@ -27,5 +28,9 @@ export const privateRoutes = [
     {
         path: config.routes.supplierManagement,
         component: SupplierManagement,
+    },
+    {
+        path: config.routes.etkManagement,
+        component: ETKManagement,
     },
 ];

@@ -4,6 +4,7 @@ const routes = {
     categoryManagement: '/category-management',
     roleManagement: '/role-management',
     supplierManagement: '/supplier-management',
+    etkManagement: 'etk-management',
 };
 
 export default routes;
