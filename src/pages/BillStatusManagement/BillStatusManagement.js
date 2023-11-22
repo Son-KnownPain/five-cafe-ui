@@ -166,12 +166,15 @@ function BillStatusManagement() {
                         p: 3,
                     }}
                 >
+                    <Typography variant="h6" component="h6" mb={2}>
+                        Chỉnh Sửa Hóa Đơn
+                    </Typography>
                     <form onSubmit={updateFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="status"
                                 name="status"
-                                label="Trạng thái"
+                                label="Trạng thái hóa đơn "
                                 fullWidth
                                 onChange={updateFormik.handleChange}
                                 onBlur={updateFormik.handleBlur}
@@ -210,12 +213,15 @@ function BillStatusManagement() {
                         p: 3,
                     }}
                 >
+                    <Typography variant="h6" component="h6" mb={2}>
+                        Thêm Hóa Đơn
+                    </Typography>
                     <form onSubmit={createFormik.handleSubmit}>
                         <Stack spacing={2}>
                             <TextField
                                 id="status"
                                 name="status"
-                                label="Trạng thái "
+                                label="Trạng thái hóa đơn "
                                 fullWidth
                                 onChange={createFormik.handleChange}
                                 onBlur={createFormik.handleBlur}
@@ -251,7 +257,7 @@ function BillStatusManagement() {
                                 setCreateModalOpen(true);
                             }}
                         >
-                            Thêm vào
+                            Thêm hóa đơn
                         </Button>
                         {!!selectedRows.length && (
                             <Button
