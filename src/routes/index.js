@@ -25,7 +25,7 @@ export const privateRoutes = [
         component: RoleManagement,
     },
     {
-        path: config.routes.billstatusManagement,
+        path: config.routes.billStatusManagement,
         component: BillStatusManagement,
     },
 
